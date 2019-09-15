@@ -3,7 +3,11 @@
 package lesson2.task1
 
 import lesson1.task1.discriminant
+import lesson1.task1.sqr
+import javax.management.Query.and
+import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 /**
@@ -63,7 +67,11 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String {
+    if ((age % 10 == 1) and (age % 100 != 11)) return "$age год"
+    if ((age % 10 in 2..4) and (age % 100 !in 12..14)) return "$age года"
+    return "$age лет"
+}
 
 /**
  * Простая
@@ -103,7 +111,14 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int = TODO()
+): Int {
+    return when {
+        (kingX == rookX1 || kingY == rookY1) and (kingX == rookX2 || kingY == rookY2) -> 3
+        kingX == rookX1 || kingY == rookY1 -> 1
+        kingX == rookX2 || kingY == rookY2 -> 2
+        else -> 0
+    }
+}
 
 /**
  * Простая
@@ -119,7 +134,16 @@ fun rookOrBishopThreatens(
     kingX: Int, kingY: Int,
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
-): Int = TODO()
+): Int {
+    val mx: Int = kingX - bishopX
+    val my: Int = kingY - bishopY
+    return when {
+        (kingX == rookX || kingY == rookY) and (abs(mx) == abs(my)) -> 3
+        abs(mx) == abs(my) -> 2
+        kingX == rookX || kingY == rookY -> 1
+        else -> 0
+    }
+}
 
 /**
  * Простая
@@ -129,7 +153,32 @@ fun rookOrBishopThreatens(
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
+fun triangleKind(a: Double, b: Double, c: Double): Int {
+    val gipotenyza: Double = (max(a, max(b, c)))
+    val katet: Double
+    val kated: Double
+    when (gipotenyza) {
+        a -> {
+            katet = b
+            kated = c
+        }
+        b -> {
+            katet = a
+            kated = c
+        }
+        else -> {
+            katet = a
+            kated = b
+        }
+    }
+    return when {
+        gipotenyza > (kated + katet) -> -1
+        sqr(gipotenyza) < (sqr(kated) + sqr(katet)) -> 0
+        sqr(gipotenyza) == (sqr(kated) + sqr(katet)) -> 1
+        else -> 2
+    }
+}
+
 
 /**
  * Средняя
@@ -139,4 +188,24 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    val dlina: Int
+    if (((d > b) and (a > c)) || ((b > d) and (c > a)))
+        return min((b - a), (d - c))
+    else {
+        val maks: Int = max(a, c)
+        dlina = if (maks == a) {
+            val m1: Int = max(a, d)
+            if (m1 == d)
+                d - a
+            else -1
+        } else {
+            val m2: Int = max(b, c)
+            if (m2 == b)
+                b - c
+            else -1
+        }
+
+        return dlina
+    }
+}
