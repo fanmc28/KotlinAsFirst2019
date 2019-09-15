@@ -192,6 +192,12 @@ fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
     val dlina: Int
     if (((d > b) and (a > c)) || ((b > d) and (c > a)))
         return min((b - a), (d - c))
+    else if ((a == b) and (c == b) || (d == c) and (a == c))
+        return 0
+    else if ((a == b || c == d) and (a in b..c || c in a..b))
+        return 0
+    else if ((a == b || c == d) and (a !in b..c || c !in a..b))
+        return -1
     else {
         val maks: Int = max(a, c)
         dlina = if (maks == a) {
