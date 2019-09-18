@@ -72,7 +72,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun digitNumber(n: Int): Int {
-    var kol: Int = 0
+    var kol = 0
     var x = n
     return if ((0 <= x) and (x < 10))
         1
@@ -124,7 +124,7 @@ fun lcm(m: Int, n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var del: Int = 2
+    var del = 2
     for (i in 2..n) {
         if (n % i != 0) {
             del += 1
@@ -187,7 +187,7 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
     val x: Double = ((sqrt(m.toDouble())) * 10) % 10
     val y: Double = ((sqrt(n.toDouble())) * 10) % 10
     loop@ for (i in m..n) {
-        var z: Double = ((sqrt(i.toDouble())) * 10) % 10
+        val z: Double = ((sqrt(i.toDouble())) * 10) % 10
         when {
             (m == n) and (x == 0.0) -> {
                 result = i
@@ -229,7 +229,7 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
  */
 fun collatzSteps(x: Int): Int {
     var y = x
-    var result: Int = 0
+    var result = 0
     while (y != 1) {
         if (y % 2 == 0) {
             y /= 2
@@ -288,6 +288,23 @@ fun revert(n: Int): Int {
     }
 }
 
+fun revert(n: Long): Long {
+    var y = n
+    var x: Int = digitNumber(n.toInt())
+    var result: Long = y % 10
+    return if (y / 10 == 0L)
+        result
+    else {
+        y /= 10
+        x -= 1
+        for (i in 1..x) {
+            result = result * 10 + y % 10
+            y /= 10
+        }
+        result
+    }
+}
+
 /**
  * Средняя
  *
@@ -311,7 +328,7 @@ fun isPalindrome(n: Int): Boolean {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun hasDifferentDigits(n: Int): Boolean {
-    var k: Int = 1
+    var k = 1
     if (n < 10)
         return false
     else {
@@ -338,8 +355,8 @@ fun hasDifferentDigits(n: Int): Boolean {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun squareSequenceDigit(n: Int): Int {
-    var k: Int = 1
-    var y: Int = 1
+    var k = 1
+    var y = 1
     while (n > k) {
         y += 1
         k += digitNumber(sqr(y))
@@ -347,13 +364,13 @@ fun squareSequenceDigit(n: Int): Int {
     if (n == k)
         y = sqr(y) % 10
     else {
-        k = n - (k - digitNumber(sqr(y))) - 1
-        val l: Int = digitNumber(sqr(y))
-        y = revert(sqr(y))
+        val y2 = sqr(y)
+        k = n - (k - digitNumber(y2)) - 1
+        var y3 = revert(y2.toLong())
         for (i in 1..k) {
-            y /= 10
+            y3 /= 10
         }
-        y %= 10
+        y = (y3 % 10).toInt()
     }
     return y
 }

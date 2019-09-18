@@ -189,29 +189,42 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
-    val dlina: Int
-    if (((d > b) and (a > c)) || ((b > d) and (c > a)))
-        return min((b - a), (d - c))
-    else if ((a == b) and (c == b) || (d == c) and (a == c))
-        return 0
-    else if ((a == b || c == d) and (a in b..c || c in a..b))
-        return 0
-    else if ((a == b || c == d) and (a !in b..c || c !in a..b))
-        return -1
-    else {
-        val maks: Int = max(a, c)
-        dlina = if (maks == a) {
-            val m1: Int = max(a, d)
-            if (m1 == d)
-                d - a
-            else -1
-        } else {
-            val m2: Int = max(b, c)
-            if (m2 == b)
-                b - c
-            else -1
+    return when {
+        (((d > b) and (a > c)) || ((b > d) and (c > a))) -> min((b - a), (d - c))
+        a == b -> {
+            if ((c == d) and (c != a) || c > a || b > d)
+                -1
+            else 0
         }
+        c == d -> {
+            if ((c == d) and (c != a) || c < a || b < d)
+                -1
+            else 0
+        }
+        (a == c) and (b != d) -> {
+            if ((min(b, d)) == b)
+                b - a
+            else d - c
+        }
+        (b == d) and (a != c) -> {
+            if ((max(a, c)) == c)
+                d - c
+            else b - a
+        }
+        else -> {
+            val maks: Int = max(a, c)
+            if (maks == a) {
+                val m1: Int = max(a, d)
+                if (m1 == d)
+                    d - a
+                else -1
+            } else {
+                val m2: Int = max(b, c)
+                if (m2 == b)
+                    b - c
+                else -1
 
-        return dlina
+            }
+        }
     }
 }
