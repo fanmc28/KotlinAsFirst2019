@@ -375,6 +375,7 @@ fun squareSequenceDigit(n: Int): Int {
     return y
 }
 
+
 /**
  * Сложная
  *
@@ -384,4 +385,26 @@ fun squareSequenceDigit(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var z = 1
+    var k = 2
+    var y = 1
+    var s = 1
+    while (n > k) {
+        s = y
+        y += z
+        z = s
+        k += digitNumber(y)
+    }
+    if (n == k)
+        y %= 10
+    else {
+        k = n - (k - digitNumber(y)) - 1
+        var y2 = revert(y.toLong())
+        for (i in 1..k) {
+            y2 /= 10
+        }
+        y = (y2 % 10).toInt()
+    }
+    return y
+}
