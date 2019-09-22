@@ -72,18 +72,13 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun digitNumber(n: Int): Int {
-    var kol = 0
+    var kol = 1
     var x = n
-    return if ((0 <= x) and (x < 10))
-        1
-    else {
-        while (x != 0) {
-            kol += 1
-            x /= 10
-        }
-        kol
+    while (x > 9) {
+        kol += 1
+        x /= 10
     }
-
+    return kol
 }
 
 /**
@@ -92,10 +87,7 @@ fun digitNumber(n: Int): Int {
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int {
-    val y: Double = ((((1 + sqrt(5.0)) / 2).pow(n)) - (((1 - sqrt(5.0)) / 2).pow(n))) / (sqrt(5.0))
-    return y.toInt()
-}
+fun fib(n: Int): Int = (((((1 + sqrt(5.0)) / 2).pow(n)) - (((1 - sqrt(5.0)) / 2).pow(n))) / (sqrt(5.0))).toInt()
 
 /**
  * Простая
@@ -106,7 +98,6 @@ fun fib(n: Int): Int {
 fun lcm(m: Int, n: Int): Int {
     var x = m
     var y = n
-
     while ((x != 0) and (y != 0)) {
         if (x > y) {
             x %= y
@@ -114,8 +105,7 @@ fun lcm(m: Int, n: Int): Int {
             y %= x
         }
     }
-
-    return m * n / (x + y)
+    return m / (x + y) * n
 }
 
 /**
@@ -124,14 +114,14 @@ fun lcm(m: Int, n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var del = 2
-    for (i in 2..n) {
-        if (n % i != 0) {
-            del += 1
+    var del = n
+    for (i in 2..n / 2) {
+        if (n % i != 0)
             continue
-        }
-        if (n % i == 0)
+        else {
+            del = i
             break
+        }
     }
     return del
 }
@@ -142,14 +132,14 @@ fun minDivisor(n: Int): Int {
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
 fun maxDivisor(n: Int): Int {
-    var del: Int = n - 1
-    for (i in n - 1 downTo 1) {
-        if (n % i != 0) {
-            del -= 1
+    var del = 1
+    for (i in n / 2 downTo 1) {
+        if (n % i != 0)
             continue
-        }
-        if (n % i == 0)
+        else {
+            del = i
             break
+        }
     }
     return del
 }
@@ -161,19 +151,7 @@ fun maxDivisor(n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    var x = m
-    var y = n
-
-    while ((x != 0) and (y != 0)) {
-        if (x > y) {
-            x %= y
-        } else {
-            y %= x
-        }
-    }
-    return (x + y) == 1
-}
+fun isCoPrime(m: Int, n: Int): Boolean = (m * n / lcm(m, n)) == 1
 
 /**
  * Простая
@@ -183,33 +161,11 @@ fun isCoPrime(m: Int, n: Int): Boolean {
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
 fun squareBetweenExists(m: Int, n: Int): Boolean {
-    var result: Int = -1
     val x: Double = ((sqrt(m.toDouble())) * 10) % 10
     val y: Double = ((sqrt(n.toDouble())) * 10) % 10
-    loop@ for (i in m..n) {
-        val z: Double = ((sqrt(i.toDouble())) * 10) % 10
-        when {
-            (m == n) and (x == 0.0) -> {
-                result = i
-                break@loop
-            }
-            x == 0.0 -> {
-                result = m
-                break@loop
-            }
-            y == 0.0 -> {
-                result = n
-                break@loop
-            }
-            z == 0.0 -> {
-                result = i
-                break@loop
-            }
-        }
-    }
-    return result != -1
+    val z: Int = sqrt(n.toDouble()).toInt() - sqrt(m.toDouble()).toInt()
+    return x == 0.0 || y == 0.0 || z >= 1
 }
-
 
 /**
  * Средняя
@@ -273,19 +229,12 @@ fun cos(x: Double, eps: Double): Double = TODO()
  */
 fun revert(n: Int): Int {
     var y = n
-    var x: Int = digitNumber(n)
     var result: Int = y % 10
-    return if (y / 10 == 0)
-        result
-    else {
+    while (y / 10 != 0) {
         y /= 10
-        x -= 1
-        for (i in 1..x) {
-            result = result * 10 + y % 10
-            y /= 10
-        }
-        result
+        result = result * 10 + y % 10
     }
+    return result
 }
 
 fun revert(n: Long): Long {
@@ -314,10 +263,7 @@ fun revert(n: Long): Long {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean {
-    val x: Int = revert(n)
-    return x == n
-}
+fun isPalindrome(n: Int): Boolean = n == revert(n)
 
 /**
  * Средняя
@@ -329,18 +275,15 @@ fun isPalindrome(n: Int): Boolean {
  */
 fun hasDifferentDigits(n: Int): Boolean {
     var k = 1
-    if (n < 10)
-        return false
-    else {
-        var x: Int = n % 10
-        var y: Int = n % 100 / 10
-        var z: Int = n / 100
-        while (x == y) {
-            k += 1
-            x = y
-            y = z % 10
-            z /= 10
-        }
+    var y = n / 10
+    var x = n % 10
+    while (y > 0) {
+        if (y % 10 == x) {
+            x = y % 10
+            y /= 10
+            k++
+            continue
+        } else break
     }
     return k != digitNumber(n)
 }
@@ -358,23 +301,14 @@ fun squareSequenceDigit(n: Int): Int {
     var k = 1
     var y = 1
     while (n > k) {
-        y += 1
+        y++
         k += digitNumber(sqr(y))
     }
-    if (n == k)
-        y = sqr(y) % 10
-    else {
-        val y2 = sqr(y)
-        k = n - (k - digitNumber(y2)) - 1
-        var y3 = revert(y2.toLong())
-        for (i in 1..k) {
-            y3 /= 10
-        }
-        y = (y3 % 10).toInt()
-    }
-    return y
+    y = sqr(y)
+    for (i in 1..k - n)
+        y /= 10
+    return y % 10
 }
-
 
 /**
  * Сложная
@@ -389,22 +323,18 @@ fun fibSequenceDigit(n: Int): Int {
     var z = 1
     var k = 2
     var y = 1
-    var s = 1
+    var s: Int
     while (n > k) {
         s = y
         y += z
         z = s
         k += digitNumber(y)
     }
-    if (n == k)
-        y %= 10
+    if (n < 2)
+        return y % 10
     else {
-        k = n - (k - digitNumber(y)) - 1
-        var y2 = revert(y.toLong())
-        for (i in 1..k) {
-            y2 /= 10
-        }
-        y = (y2 % 10).toInt()
+        for (i in 1..k - n)
+            y /= 10
     }
-    return y
+    return y % 10
 }

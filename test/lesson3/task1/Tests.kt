@@ -91,6 +91,7 @@ class Tests {
     @Test
     @Tag("Easy")
     fun lcm() {
+        assertEquals(1225, lcm(25, 49))
         assertEquals(13, lcm(13, 13))
         assertEquals(8, lcm(2, 8))
         assertEquals(24, lcm(6, 8))
@@ -229,24 +230,25 @@ class Tests {
     @Test
     @Tag("Hard")
     fun squareSequenceDigit() {
-        assertEquals(9, squareSequenceDigit(298995))
         assertEquals(1, squareSequenceDigit(1))
         assertEquals(4, squareSequenceDigit(2))
         assertEquals(5, squareSequenceDigit(7))
         assertEquals(6, squareSequenceDigit(12))
         assertEquals(0, squareSequenceDigit(17))
         assertEquals(9, squareSequenceDigit(27))
+        assertEquals(9, squareSequenceDigit(298995))
     }
 
     @Test
     @Tag("Hard")
     fun fibSequenceDigit() {
-        assertEquals(1, fibSequenceDigit(1))
         assertEquals(1, fibSequenceDigit(2))
         assertEquals(3, fibSequenceDigit(4))
         assertEquals(2, fibSequenceDigit(9))
         assertEquals(5, fibSequenceDigit(14))
         assertEquals(2, fibSequenceDigit(20))
         assertEquals(5, fibSequenceDigit(33))
+        assertEquals(1, fibSequenceDigit(1))
+        assertEquals(9, fibSequenceDigit(16))
     }
 }
