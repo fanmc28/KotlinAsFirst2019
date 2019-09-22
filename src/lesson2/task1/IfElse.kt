@@ -115,7 +115,7 @@ fun whichRookThreatens(
     val k3 = kingX == rookX2
     val k4 = kingY == rookY2
     return when {
-        k || k2 && k3 || k4 -> 3
+        (k || k2) && (k3 || k4) -> 3
         k || k2 -> 1
         k3 || k4 -> 2
         else -> 0
@@ -143,7 +143,7 @@ fun rookOrBishopThreatens(
     val k2 = kingY == rookY
     val a = abs(mx) == abs(my)
     return when {
-        k || k2 && a -> 3
+        (k || k2) && a -> 3
         a -> 2
         k || k2 -> 1
         else -> 0

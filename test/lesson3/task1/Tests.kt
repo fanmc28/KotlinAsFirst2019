@@ -65,6 +65,7 @@ class Tests {
     @Test
     @Tag("Easy")
     fun digitNumber() {
+        assertEquals(2, digitNumber(-16))
         assertEquals(1, digitNumber(0))
         assertEquals(1, digitNumber(7))
         assertEquals(2, digitNumber(10))
@@ -91,6 +92,7 @@ class Tests {
     @Test
     @Tag("Easy")
     fun lcm() {
+        assertEquals(181700000, lcm(100000, 45425))
         assertEquals(1225, lcm(25, 49))
         assertEquals(13, lcm(13, 13))
         assertEquals(8, lcm(2, 8))
@@ -134,6 +136,7 @@ class Tests {
     @Test
     @Tag("Easy")
     fun isCoPrime() {
+        assertFalse(isCoPrime(100000, 45425))
         assertTrue(isCoPrime(25, 49))
         assertFalse(isCoPrime(6, 8))
         assertTrue(isCoPrime(17, 97))
