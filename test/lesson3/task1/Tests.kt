@@ -136,6 +136,7 @@ class Tests {
     @Test
     @Tag("Easy")
     fun isCoPrime() {
+        assertTrue(isCoPrime(1, 1))
         assertFalse(isCoPrime(100000, 45425))
         assertTrue(isCoPrime(25, 49))
         assertFalse(isCoPrime(6, 8))

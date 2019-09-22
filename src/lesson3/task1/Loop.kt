@@ -150,7 +150,7 @@ fun maxDivisor(n: Int): Int {
  */
 fun isCoPrime(m: Int, n: Int): Boolean {
     return when {
-        m == n -> false
+        m == n && m != 1 -> false
         (m > (Int.MAX_VALUE / 2) || n > (Int.MAX_VALUE / 2)) -> true
         lcm(m, n) / m == n -> true
         else -> false
