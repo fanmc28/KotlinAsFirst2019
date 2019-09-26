@@ -86,8 +86,8 @@ fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
 
 fun medianOf(a: Int, b: Int, c: Int): Int {
     return when {
-        b in a..c -> b
-        a in b..c -> a
+        b in a..c || b in c..a -> b
+        a in b..c || a in c..b -> a
         else -> c
     }
 }
