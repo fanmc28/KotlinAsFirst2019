@@ -191,8 +191,8 @@ fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
 
 fun medianOf(a: Double, b: Double, c: Double): Double {
     return when {
-        a < maxOf(a, b, c) && a > minOf(a, b, c) -> a
-        b < maxOf(a, b, c) && b > minOf(a, b, c) -> b
+        b in a..c -> b
+        a in b..c -> a
         else -> c
     }
 }
