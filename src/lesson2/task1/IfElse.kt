@@ -4,6 +4,7 @@ package lesson2.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
+import lesson2.task2.medianOf
 import javax.management.Query.and
 import kotlin.math.abs
 import kotlin.math.max
@@ -160,22 +161,8 @@ fun rookOrBishopThreatens(
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
     val g: Double = maxOf(a, b, c)
-    val k1: Double
-    val k2: Double
-    when (g) {
-        a -> {
-            k1 = b
-            k2 = c
-        }
-        b -> {
-            k1 = a
-            k2 = c
-        }
-        else -> {
-            k1 = a
-            k2 = b
-        }
-    }
+    val k1: Double = minOf(a, b, c)
+    val k2: Double = medianOf(a, b, c)
     return when {
         g > (k2 + k1) -> -1
         sqr(g) < (sqr(k2) + sqr(k1)) -> 0
@@ -199,5 +186,13 @@ fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
     return when {
         (m2 - m1) >= 0 -> (m2 - m1)
         else -> -1
+    }
+}
+
+fun medianOf(a: Double, b: Double, c: Double): Double {
+    return when {
+        a < maxOf(a, b, c) && a > minOf(a, b, c) -> a
+        b < maxOf(a, b, c) && b > minOf(a, b, c) -> b
+        else -> c
     }
 }

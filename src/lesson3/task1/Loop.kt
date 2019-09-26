@@ -69,13 +69,11 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun digitNumber(n: Int): Int {
-    var kol = 1
-    var x = n
-    while (abs(x) > 9) {
-        kol += 1
-        x /= 10
+    val x: Int = abs(n)
+    if (x > 9) {
+        return digitNumber(n / 10) + 1
     }
-    return kol
+    return 1
 }
 
 /**
@@ -92,18 +90,8 @@ fun fib(n: Int): Int = (((((1 + sqrt(5.0)) / 2).pow(n)) - (((1 - sqrt(5.0)) / 2)
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int {
-    var x = m
-    var y = n
-    while ((x != 0) and (y != 0)) {
-        if (x > y) {
-            x %= y
-        } else {
-            y %= x
-        }
-    }
-    return m / (x + y) * n
-}
+fun lcm(m: Int, n: Int): Int = m / greatestCommonDivisor(m, n) * n
+
 
 /**
  * Простая
@@ -111,16 +99,16 @@ fun lcm(m: Int, n: Int): Int {
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var del = n
-    for (i in 2..n / 2) {
+    var divisor = n
+    for (i in 2..sqrt(n.toDouble()).toInt()) {
         if (n % i != 0)
             continue
         else {
-            del = i
+            divisor = i
             break
         }
     }
-    return del
+    return divisor
 }
 
 /**
@@ -129,16 +117,16 @@ fun minDivisor(n: Int): Int {
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
 fun maxDivisor(n: Int): Int {
-    var del = 1
-    for (i in n / 2 downTo 1) {
+    var divisor = 1
+    for (i in n / 2 downTo minDivisor(n)) {
         if (n % i != 0)
             continue
         else {
-            del = i
+            divisor = i
             break
         }
     }
-    return del
+    return divisor
 }
 
 /**
@@ -148,13 +136,19 @@ fun maxDivisor(n: Int): Int {
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean {
-    return when {
-        m == n && m != 1 -> false
-        (m > (Int.MAX_VALUE / 2) || n > (Int.MAX_VALUE / 2)) -> true
-        lcm(m, n) / m == n -> true
-        else -> false
+fun isCoPrime(m: Int, n: Int): Boolean = greatestCommonDivisor(m, n) == 1
+
+fun greatestCommonDivisor(m: Int, n: Int): Int {
+    var x = m
+    var y = n
+    while ((x != 0) and (y != 0)) {
+        if (x > y) {
+            x %= y
+        } else {
+            y %= x
+        }
     }
+    return x + y
 }
 
 /**
@@ -168,8 +162,10 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
     val x: Double = ((sqrt(m.toDouble())) * 10) % 10
     val y: Double = ((sqrt(n.toDouble())) * 10) % 10
     val z: Int = sqrt(n.toDouble()).toInt() - sqrt(m.toDouble()).toInt()
-    return x == 0.0 || y == 0.0 || z >= 1
+    return equal(x, 0.0) || equal(y, 0.0) || z >= 1
 }
+
+fun equal(x: Double, y: Double): Boolean = x.compareTo(y) == 0
 
 /**
  * Средняя
@@ -241,22 +237,6 @@ fun revert(n: Int): Int {
     return result
 }
 
-fun revert(n: Long): Long {
-    var y = n
-    var x: Int = digitNumber(n.toInt())
-    var result: Long = y % 10
-    return if (y / 10 == 0L)
-        result
-    else {
-        y /= 10
-        x -= 1
-        for (i in 1..x) {
-            result = result * 10 + y % 10
-            y /= 10
-        }
-        result
-    }
-}
 
 /**
  * Средняя
@@ -286,8 +266,7 @@ fun hasDifferentDigits(n: Int): Boolean {
             x = y % 10
             y /= 10
             k++
-            continue
-        } else break
+        } else return true
     }
     return k != digitNumber(n)
 }
@@ -336,9 +315,8 @@ fun fibSequenceDigit(n: Int): Int {
     }
     if (n < 2)
         return y % 10
-    else {
-        for (i in 1..k - n)
-            y /= 10
-    }
+
+    for (i in 1..k - n)
+        y /= 10
     return y % 10
 }

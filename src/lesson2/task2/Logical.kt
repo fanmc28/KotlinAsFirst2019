@@ -3,7 +3,6 @@
 package lesson2.task2
 
 import lesson1.task1.sqr
-import javax.management.Query.and
 import kotlin.math.*
 
 /**
@@ -82,8 +81,14 @@ fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
     val m1: Int = medianOf(a, b, c)
     val m2: Int = max(s, r)
     val m3: Int = min(s, r)
-    return (small <= m3 && m1 <= m2)
+    return small <= m3 && m1 <= m2
 }
 
-fun medianOf(a: Int, b: Int, c: Int): Int = a + b + c - minOf(a, b, c) - maxOf(a, b, c)
+fun medianOf(a: Int, b: Int, c: Int): Int {
+    return when {
+        a < maxOf(a, b, c) && a > minOf(a, b, c) -> a
+        b < maxOf(a, b, c) && b > minOf(a, b, c) -> b
+        else -> c
+    }
+}
 

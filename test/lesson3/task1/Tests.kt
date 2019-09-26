@@ -136,6 +136,7 @@ class Tests {
     @Test
     @Tag("Easy")
     fun isCoPrime() {
+        assertTrue(isCoPrime(82114, 48765))
         assertTrue(isCoPrime(1, 1))
         assertFalse(isCoPrime(100000, 45425))
         assertTrue(isCoPrime(25, 49))
@@ -202,7 +203,6 @@ class Tests {
     @Test
     @Tag("Normal")
     fun revert() {
-        assertEquals(6759091911L, revert(1191909576L))
         assertEquals(87431, revert(13478))
         assertEquals(0, revert(0))
         assertEquals(3, revert(3))
