@@ -99,16 +99,11 @@ fun lcm(m: Int, n: Int): Int = m / greatestCommonDivisor(m, n) * n
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
 fun minDivisor(n: Int): Int {
-    var divisor = n
     for (i in 2..sqrt(n.toDouble()).toInt()) {
         if (n % i != 0)
-            continue
-        else {
-            divisor = i
-            break
-        }
+        else return i
     }
-    return divisor
+    return n
 }
 
 /**
@@ -116,18 +111,7 @@ fun minDivisor(n: Int): Int {
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    var divisor = 1
-    for (i in n / 2 downTo minDivisor(n)) {
-        if (n % i != 0)
-            continue
-        else {
-            divisor = i
-            break
-        }
-    }
-    return divisor
-}
+fun maxDivisor(n: Int): Int = n / minDivisor(n)
 
 /**
  * Простая
@@ -159,13 +143,13 @@ fun greatestCommonDivisor(m: Int, n: Int): Int {
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
 fun squareBetweenExists(m: Int, n: Int): Boolean {
-    val x: Double = ((sqrt(m.toDouble())) * 10) % 10
-    val y: Double = ((sqrt(n.toDouble())) * 10) % 10
+    val x: Int = sqr(sqrt(m.toDouble()).toInt())
+    val y: Int = sqr(sqrt(n.toDouble()).toInt())
     val z: Int = sqrt(n.toDouble()).toInt() - sqrt(m.toDouble()).toInt()
-    return equal(x, 0.0) || equal(y, 0.0) || z >= 1
+    return x == m || y == n || z >= 1
 }
 
-fun equal(x: Double, y: Double): Boolean = x.compareTo(y) == 0
+//fun equal(x: Double, y: Double): Boolean = x.compareTo(y) == 0
 
 /**
  * Средняя
@@ -268,7 +252,7 @@ fun hasDifferentDigits(n: Int): Boolean {
             k++
         } else return true
     }
-    return k != digitNumber(n)
+    return false
 }
 
 /**
@@ -288,9 +272,20 @@ fun squareSequenceDigit(n: Int): Int {
         k += digitNumber(sqr(y))
     }
     y = sqr(y)
-    for (i in 1..k - n)
+    val list: MutableList<Int> = numberComposition(y)
+    return list[digitNumber(y) - (k - n) - 1]
+}
+
+fun numberComposition(n: Int): MutableList<Int> {
+    var z = n % 10
+    var y = n
+    val list: MutableList<Int> = mutableListOf()
+    for (i in 1..digitNumber(n)) {
+        list.add(0, z)
         y /= 10
-    return y % 10
+        z = y % 10
+    }
+    return list
 }
 
 /**
@@ -313,10 +308,8 @@ fun fibSequenceDigit(n: Int): Int {
         z = s
         k += digitNumber(y)
     }
-    if (n < 2)
-        return y % 10
-
-    for (i in 1..k - n)
-        y /= 10
-    return y % 10
+    val list: MutableList<Int> = numberComposition(y)
+    return if (n < 2)
+        1
+    else list[digitNumber(y) - (k - n) - 1]
 }

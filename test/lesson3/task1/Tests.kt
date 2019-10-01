@@ -150,6 +150,7 @@ class Tests {
     @Test
     @Tag("Easy")
     fun squareBetweenExists() {
+        assertFalse(squareBetweenExists(749999, 750000))
         assertTrue(squareBetweenExists(1, 1))
         assertTrue(squareBetweenExists(21, 28))
         assertTrue(squareBetweenExists(36, 48))
@@ -247,12 +248,12 @@ class Tests {
     @Tag("Hard")
     fun fibSequenceDigit() {
         assertEquals(1, fibSequenceDigit(2))
+        assertEquals(1, fibSequenceDigit(1))
         assertEquals(3, fibSequenceDigit(4))
         assertEquals(2, fibSequenceDigit(9))
         assertEquals(5, fibSequenceDigit(14))
         assertEquals(2, fibSequenceDigit(20))
         assertEquals(5, fibSequenceDigit(33))
-        assertEquals(1, fibSequenceDigit(1))
         assertEquals(9, fibSequenceDigit(16))
     }
 }
