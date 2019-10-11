@@ -3,6 +3,7 @@
 package lesson3.task1
 
 import lesson1.task1.sqr
+import lesson4.task1.numberComposition
 import kotlin.math.*
 
 /**
@@ -100,8 +101,8 @@ fun lcm(m: Int, n: Int): Int = m / greatestCommonDivisor(m, n) * n
  */
 fun minDivisor(n: Int): Int {
     for (i in 2..sqrt(n.toDouble()).toInt()) {
-        if (n % i != 0)
-        else return i
+        if (n % i == 0)
+            return i
     }
     return n
 }
@@ -272,20 +273,12 @@ fun squareSequenceDigit(n: Int): Int {
         k += digitNumber(sqr(y))
     }
     y = sqr(y)
-    val list: MutableList<Int> = numberComposition(y)
-    return list[digitNumber(y) - (k - n) - 1]
+    return numberComposition(y, digitNumber(y) - k + n)
 }
 
-fun numberComposition(n: Int): MutableList<Int> {
-    var z = n % 10
-    var y = n
-    val list: MutableList<Int> = mutableListOf()
-    for (i in 1..digitNumber(n)) {
-        list.add(0, z)
-        y /= 10
-        z = y % 10
-    }
-    return list
+fun numberComposition(n: Int, pos: Int): Int {
+    val list = numberComposition(n)
+    return list[pos - 1]
 }
 
 /**
@@ -308,8 +301,7 @@ fun fibSequenceDigit(n: Int): Int {
         z = s
         k += digitNumber(y)
     }
-    val list: MutableList<Int> = numberComposition(y)
     return if (n < 2)
         1
-    else list[digitNumber(y) - (k - n) - 1]
+    else numberComposition(y, digitNumber(y) - k + n)
 }

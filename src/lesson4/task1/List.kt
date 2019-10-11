@@ -4,6 +4,8 @@ package lesson4.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
+import lesson3.task1.digitNumber
+import lesson3.task1.minDivisor
 import kotlin.math.*
 
 /**
@@ -16,8 +18,7 @@ fun sqRoots(y: Double) =
         y < 0 -> listOf()
         y == 0.0 -> listOf(0.0)
         else -> {
-            val root = sqrt(y)
-            // Результат!
+            val root = sqrt(y) // Результат!
             listOf(-root, root)
         }
     }
@@ -132,7 +133,7 @@ fun abs(v: List<Double>): Double {
 fun mean(list: List<Double>): Double {
     return if (list.isEmpty())
         0.0
-    else list.sum() / list.size.toDouble()
+    else list.sum() / list.size
 }
 
 /**
@@ -145,9 +146,7 @@ fun mean(list: List<Double>): Double {
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
     val k: Double = mean(list)
-    for (i in 0 until list.size) {
-        list[i] = list[i] - k
-    }
+    list.replaceAll { it - k }
     return list
 }
 
@@ -208,7 +207,22 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  * Результат разложения вернуть в виде списка множителей, например 75 -> (3, 5, 5).
  * Множители в списке должны располагаться по возрастанию.
  */
-fun factorize(n: Int): List<Int> = TODO()
+fun factorize(n: Int): List<Int> {
+    var k = n
+    val list: MutableList<Int> = mutableListOf()
+    if (isPrime(k))
+        return listOf(k)
+    else {
+        while (!isPrime(k)) {
+            list.add(minDivisor(k))
+            k /= minDivisor(k)
+        }
+    }
+    list.add(minDivisor(k))
+    return list
+}
+
+fun isPrime(n: Int): Boolean = n / minDivisor(n) == 1
 
 /**
  * Сложная
@@ -217,7 +231,7 @@ fun factorize(n: Int): List<Int> = TODO()
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String = TODO()
+fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*")
 
 /**
  * Средняя
@@ -228,15 +242,14 @@ fun factorizeToString(n: Int): String = TODO()
  */
 fun convert(n: Int, base: Int): List<Int> {
     var x = n
-    var y: Int
     val list: MutableList<Int> = mutableListOf()
-    while (x >= base) {
-        y = x % base
+    while (x >= 1) {
+        list.add(x % base)
         x /= base
-        list.add(0, y)
     }
-    list.add(0, x)
-    return list
+    return if (n == 0)
+        listOf(0)
+    else list.reversed()
 }
 
 /**
@@ -250,7 +263,18 @@ fun convert(n: Int, base: Int): List<Int> {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun convertToString(n: Int, base: Int): String = TODO()
+fun convertToString(n: Int, base: Int): String {
+    val list = ('a'..'z').toList()
+    val r = convert(n, base)
+    val result: MutableList<Char> = listOf<Char>().toMutableList()
+    for (i in 0 until r.size)
+        if (r[i] > 9) {
+            val index = r[i] - 10
+            result.add(list[index])
+        } else result.add(('0'.toInt() + r[i]).toChar())
+    return result.joinToString(separator = "")
+}
+
 
 /**
  * Средняя
@@ -281,7 +305,22 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+fun decimalFromString(str: String, base: Int): Int {
+    val length = str.length - 1
+    var x = 1
+    var k = 0
+    val zero = '0'.toInt()
+    val nine = '9'.toInt()
+    val wCap = 'W'.toInt()
+    for (i in length downTo 0) {
+        val s = str[i].toInt()
+        k += if (s <= nine)
+            (s - zero) * x
+        else (s - wCap) * x
+        x *= base
+    }
+    return k
+}
 
 /**
  * Сложная
@@ -291,7 +330,51 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String {
+    val romandigits: List<String> = listOf(
+        "",
+        "I",
+        "X",
+        "C",
+        "M",
+        "V",
+        "L",
+        "D"
+    )
+    val result: MutableList<String> = mutableListOf()
+    var x = n
+    var z = n % 10
+    for (i in 1..digitNumber(x)) {
+        when {
+            z == 9 -> {
+                result.add(romandigits[i + 1])
+                result.add(romandigits[i])
+            }
+            z >= 5 -> {
+                while (z > 5) {
+                    result.add(romandigits[i])
+                    z--
+                }
+                result.add(romandigits[i + 4])
+            }
+            z == 4 -> {
+                result.add(romandigits[i + 4])
+                result.add(romandigits[i])
+            }
+            else -> {
+                while (z != 0) {
+                    result.add(romandigits[i])
+                    z--
+                }
+            }
+        }
+        x /= 10
+        z = x % 10
+    }
+    result.reverse()
+    return result.joinToString(separator = "")
+}
+
 
 /**
  * Очень сложная
@@ -300,4 +383,106 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+
+val digits: List<String> = listOf(
+    "", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"
+)
+val tens: List<String> =
+    listOf(
+        "",
+        "десять",
+        "двадцать",
+        "тридцать",
+        "сорок",
+        "пятьдесят",
+        "шестьдесят",
+        "семьдесят",
+        "восемьдесят",
+        "девяносто"
+    )
+val ten: List<String> = listOf(
+    "",
+    "одиннадцать",
+    "двенадцать",
+    "тринадцать",
+    "четырнадцать",
+    "пятнадцать",
+    "шестнадцать",
+    "семнадцать",
+    "восемнадцать",
+    "девятнадцать"
+)
+val hundred: List<String> =
+    listOf(
+        "",
+        "сто",
+        "двести",
+        "триста",
+        "четыреста",
+        "пятьсот",
+        "шестьсот",
+        "семьсот",
+        "восемьсот",
+        "девятьсот"
+    )
+val exceptions: List<String> =
+    listOf("", "одна тысяча", "две тысячи", "три тысячи", "четыре тысячи", "тысяч")
+
+fun russian(n: Int): String {
+    val result: MutableList<String> = mutableListOf()
+    val x = n % 1000
+    val y = n / 1000
+    if (x != 0) {
+        val s = numberComposition(x)
+        var k1 = 1
+        s.reverse()
+        if (s.size > 1 && s[0] != 0 && s[1] == 1) {
+            result.add(ten[s[0]])
+            k1 += 2
+        }
+        for (i in k1..digitNumber(x)) {
+            when {
+                i == 1 && s[0] != 0 -> result.add(digits[s[0]])
+                i == 2 && s[1] != 0 -> result.add(tens[s[1]])
+                i == 3 && s[2] != 0 -> result.add(hundred[s[2]])
+            }
+        }
+    }
+    if (y != 0) {
+        val s1 = numberComposition(y)
+        var k2 = 2
+        s1.reverse()
+        if (s1.size > 1 && s1[0] != 0 && s1[1] == 1) {
+            result.add(exceptions[5])
+            result.add(ten[s1[0]])
+            k2 += 1
+        } else if (s1[0] < 4 && s1[0] != 0)
+            result.add(exceptions[s1[0]])
+        else if (s1[0] != 0) {
+            result.add(exceptions[5])
+            result.add((digits[s1[0]]))
+        } else result.add(exceptions[5])
+        for (i in k2..digitNumber(y)) {
+            when {
+                i == 2 && s1[1] != 0 -> result.add(tens[s1[1]])
+                i == 3 && s1[2] != 0 -> result.add(hundred[s1[2]])
+            }
+        }
+    }
+    result.reverse()
+    return result.joinToString(separator = " ")
+}
+
+fun numberComposition(n: Int): MutableList<Int> {
+    var z = n % 10
+    var y = n
+    val list: MutableList<Int> = mutableListOf()
+    for (i in 1..digitNumber(n)) {
+        list.add(z)
+        y /= 10
+        z = y % 10
+    }
+    list.reverse()
+    return list
+}
+
