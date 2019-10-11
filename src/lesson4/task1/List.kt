@@ -456,7 +456,7 @@ fun russian(n: Int): String {
             result.add(exceptions[5])
             result.add(ten[s1[0]])
             k2 += 1
-        } else if (s1[0] < 4 && s1[0] != 0)
+        } else if (s1[0] <= 4 && s1[0] != 0)
             result.add(exceptions[s1[0]])
         else if (s1[0] != 0) {
             result.add(exceptions[5])
