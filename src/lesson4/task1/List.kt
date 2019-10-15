@@ -443,31 +443,46 @@ fun russian(n: Int): String {
                 result.add(digits[k])
             }
         }
-        if (y != 0 && m !in 11..19)
-            result.add(russianNumber(y))
-        else if (y != 0)
-            result.add(russianNumber(y + k))
+        if (y != 0)
+            if (m !in 11..19)
+                result.add(russianNumber(y))
+            else
+                result.add(russianNumber(y + k))
     }
     result.reverse()
     return result.joinToString(separator = " ")
 }
 
+fun addIfNotZero(list: MutableList<String>, numbers: List<String>, value: Int) {
+    if (value == 0) {
+        return
+    }
+    list.add(numbers[value])
+}
 
 fun russianNumber(n: Int): String {
     val result = mutableListOf<String>()
     if (n != 0) {
         val s = numberComposition(n)
-        var k = 1
         s.reverse()
-        if (s.size > 1 && s[0] != 0 && s[1] == 1) {
+        val l = s.size
+        if (l > 1 && s[0] != 0 && s[1] == 1) {
             result.add(ten[s[0]])
-            k += 2
-        }
-        for (i in k..digitNumber(n)) {
-            when {
-                i == 1 && s[0] != 0 -> result.add(digits[s[0]])
-                i == 2 && s[1] != 0 -> result.add(tens[s[1]])
-                i == 3 && s[2] != 0 -> result.add(hundred[s[2]])
+            if (l == 3) {
+                addIfNotZero(result, hundred, s[2])
+            }
+        } else {
+            when (l) {
+                1 -> addIfNotZero(result, digits, s[0])
+                2 -> {
+                    addIfNotZero(result, digits, s[0])
+                    addIfNotZero(result, tens, s[1])
+                }
+                3 -> {
+                    addIfNotZero(result, digits, s[0])
+                    addIfNotZero(result, tens, s[1])
+                    addIfNotZero(result, hundred, s[2])
+                }
             }
         }
     }
