@@ -162,6 +162,9 @@ class Tests {
     @Test
     @Tag("Normal")
     fun factorize() {
+        assertEquals(listOf(7, 7, 31, 31, 151, 151), factorize(1073676289))
+        assertEquals(listOf(3, 5, 23, 2803), factorize(967035))
+        assertEquals(listOf(2, 2, 2, 2, 2, 2, 3, 643), factorize(123456))
         assertEquals(listOf(2), factorize(2))
         assertEquals(listOf(3, 5, 5), factorize(75))
         assertEquals(listOf(2, 3, 3, 19), factorize(342))
@@ -237,6 +240,10 @@ class Tests {
     @Test
     @Tag("Impossible")
     fun russian() {
+        assertEquals("девятьсот тысяч", russian(900000))
+        assertEquals("сто девятнадцать тысяч пятьсот восемь", russian(119508))
+        assertEquals("две тысячи три", russian(2003))
+        assertEquals("пятьсот пятьдесят тысяч двести восемьдесят семь", russian(550287))
         assertEquals("пятьсот пятьдесят четыре тысячи двести восемьдесят семь", russian(554287))
         assertEquals("семьдесят", russian(70))
         assertEquals("четыреста пятьдесят три", russian(453))
@@ -247,17 +254,14 @@ class Tests {
         assertEquals("триста пять", russian(305))
         assertEquals("триста пятнадцать", russian(315))
         assertEquals("триста семьдесят пять", russian(375))
-        assertEquals("две тысячи три", russian(2003))
         assertEquals("пять тысяч семьдесят три", russian(5073))
         assertEquals("пять тысяч двенадцать", russian(5012))
         assertEquals("семь тысяч четыреста пятьдесят три", russian(7453))
         assertEquals("двадцать две тысячи девятьсот шестьдесят четыре", russian(22964))
-        assertEquals("сто девятнадцать тысяч пятьсот восемь", russian(119508))
         assertEquals("девятьсот девяносто девять тысяч девятьсот девяносто девять", russian(999999))
         assertEquals("двести десять тысяч два", russian(210002))
         assertEquals("двести тысяч два", russian(200002))
         assertEquals("двести одиннадцать тысяч двенадцать", russian(211012))
         assertEquals("девятьсот тысяч", russian(900000))
-
     }
 }

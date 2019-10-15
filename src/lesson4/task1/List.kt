@@ -209,15 +209,17 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  */
 fun factorize(n: Int): List<Int> {
     var k = n
-    val list: MutableList<Int> = mutableListOf()
     if (isPrime(k))
         return listOf(k)
-    else {
-        while (!isPrime(k)) {
-            list.add(minDivisor(k))
-            k /= minDivisor(k)
-        }
-    }
+
+    val list: MutableList<Int> = mutableListOf()
+
+    do {
+        val x = minDivisor(k)
+        list.add(x)
+        k /= x
+    } while (!isPrime(k))
+
     list.add(minDivisor(k))
     return list
 }
@@ -264,14 +266,13 @@ fun convert(n: Int, base: Int): List<Int> {
  * (например, n.toString(base) и подобные), запрещается.
  */
 fun convertToString(n: Int, base: Int): String {
-    val list = ('a'..'z').toList()
     val r = convert(n, base)
     val result: MutableList<Char> = listOf<Char>().toMutableList()
     for (i in 0 until r.size)
         if (r[i] > 9) {
             val index = r[i] - 10
-            result.add(list[index])
-        } else result.add(('0'.toInt() + r[i]).toChar())
+            result.add('a' + index)
+        } else result.add(('0' + r[i]))
     return result.joinToString(separator = "")
 }
 
@@ -309,14 +310,11 @@ fun decimalFromString(str: String, base: Int): Int {
     val length = str.length - 1
     var x = 1
     var k = 0
-    val zero = '0'.toInt()
-    val nine = '9'.toInt()
-    val wCap = 'W'.toInt()
     for (i in length downTo 0) {
-        val s = str[i].toInt()
-        k += if (s <= nine)
-            (s - zero) * x
-        else (s - wCap) * x
+        val s = str[i]
+        k += if (s <= '9')
+            (s - '0') * x
+        else (s - 'a' + 10) * x
         x *= base
     }
     return k
@@ -431,41 +429,45 @@ val exceptions: List<String> =
 fun russian(n: Int): String {
     val result: MutableList<String> = mutableListOf()
     val x = n % 1000
-    val y = n / 1000
-    if (x != 0) {
-        val s = numberComposition(x)
-        var k1 = 1
+    val k = n / 1000 % 10
+    val y = n / 1000 - k
+    val m = n / 1000 % 100
+    if (x != 0)
+        result.add(russianNumber(x))
+    if (y != 0 || k != 0) {
+        when {
+            m in 11..19 || k == 0 -> result.add(exceptions[5])
+            k < 5 -> result.add(exceptions[k])
+            else -> {
+                result.add(exceptions[5])
+                result.add(digits[k])
+            }
+        }
+        if (y != 0 && m !in 11..19)
+            result.add(russianNumber(y))
+        else if (y != 0)
+            result.add(russianNumber(y + k))
+    }
+    result.reverse()
+    return result.joinToString(separator = " ")
+}
+
+
+fun russianNumber(n: Int): String {
+    val result = mutableListOf<String>()
+    if (n != 0) {
+        val s = numberComposition(n)
+        var k = 1
         s.reverse()
         if (s.size > 1 && s[0] != 0 && s[1] == 1) {
             result.add(ten[s[0]])
-            k1 += 2
+            k += 2
         }
-        for (i in k1..digitNumber(x)) {
+        for (i in k..digitNumber(n)) {
             when {
                 i == 1 && s[0] != 0 -> result.add(digits[s[0]])
                 i == 2 && s[1] != 0 -> result.add(tens[s[1]])
                 i == 3 && s[2] != 0 -> result.add(hundred[s[2]])
-            }
-        }
-    }
-    if (y != 0) {
-        val s1 = numberComposition(y)
-        var k2 = 2
-        s1.reverse()
-        if (s1.size > 1 && s1[0] != 0 && s1[1] == 1) {
-            result.add(exceptions[5])
-            result.add(ten[s1[0]])
-            k2 += 1
-        } else if (s1[0] <= 4 && s1[0] != 0)
-            result.add(exceptions[s1[0]])
-        else if (s1[0] != 0) {
-            result.add(exceptions[5])
-            result.add((digits[s1[0]]))
-        } else result.add(exceptions[5])
-        for (i in k2..digitNumber(y)) {
-            when {
-                i == 2 && s1[1] != 0 -> result.add(tens[s1[1]])
-                i == 3 && s1[2] != 0 -> result.add(hundred[s1[2]])
             }
         }
     }
