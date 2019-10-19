@@ -316,6 +316,10 @@ class Tests {
     fun findSumOfTwo() {
         assertEquals(
             Pair(-1, -1),
+            findSumOfTwo(listOf(0), 1)
+        )
+        assertEquals(
+            Pair(-1, -1),
             findSumOfTwo(listOf(1, 2, 3, 4), 8)
         )
         assertEquals(
