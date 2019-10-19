@@ -103,13 +103,13 @@ class Tests {
     @Tag("Easy")
     fun buildGrades() {
         assertEquals(
-            mapOf<Int, List<String>>(),
-            buildGrades(mapOf())
-        )
-        assertEquals(
             mapOf(5 to listOf("Михаил", "Семён"), 3 to listOf("Марат")),
             buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
                 .mapValues { (_, v) -> v.sorted() }
+        )
+        assertEquals(
+            mapOf<Int, List<String>>(),
+            buildGrades(mapOf())
         )
         assertEquals(
             mapOf(3 to listOf("Марат", "Михаил", "Семён")),
@@ -121,6 +121,8 @@ class Tests {
     @Test
     @Tag("Easy")
     fun containsIn() {
+        assertFalse(containsIn(mapOf("a" to "z", "b" to "sweet"), mapOf("a" to "z")))
+        assertTrue(containsIn(mapOf("a" to "z", "b" to "sweet"), mapOf("a" to "z", "b" to "sweet")))
         assertTrue(containsIn(mapOf("a" to "z"), mapOf("a" to "z", "b" to "sweet")))
         assertFalse(containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")))
     }
@@ -214,6 +216,20 @@ class Tests {
     @Test
     @Tag("Normal")
     fun findCheapestStuff() {
+        assertEquals(
+            "Мария",
+            findCheapestStuff(
+                mapOf("Мария" to ("печенье" to 20.0)),
+                "печенье"
+            )
+        )
+        assertEquals(
+            "Мария",
+            findCheapestStuff(
+                mapOf("Мария" to ("печенье" to 20.0), "Орео" to ("печенье" to 100.0), "Орех" to ("печенье" to 80.0)),
+                "печенье"
+            )
+        )
         assertNull(
             findCheapestStuff(
                 mapOf("Мария" to ("печенье" to 20.0), "Орео" to ("печенье" to 100.0)),
@@ -232,8 +248,9 @@ class Tests {
     @Test
     @Tag("Normal")
     fun canBuildFrom() {
-        assertFalse(canBuildFrom(emptyList(), "foo"))
+        assertTrue(canBuildFrom(listOf('a', 'B', 'o'), "baobab"))
         assertTrue(canBuildFrom(listOf('a', 'b', 'o'), "baobab"))
+        assertFalse(canBuildFrom(emptyList(), "foo"))
         assertFalse(canBuildFrom(listOf('a', 'm', 'r'), "Marat"))
     }
 
@@ -299,11 +316,27 @@ class Tests {
     fun findSumOfTwo() {
         assertEquals(
             Pair(-1, -1),
-            findSumOfTwo(emptyList(), 1)
+            findSumOfTwo(listOf(1, 2, 3, 4), 8)
+        )
+        assertEquals(
+            Pair(13, 14),
+            findSumOfTwo(listOf(1, 2, 3, 4, 6, 34, 54, 754, 734, 643, 2, 5, 125, 1000, 1001), 2001)
+        )
+        assertEquals(
+            Pair(0, 4),
+            findSumOfTwo(listOf(1, 3, 4, 5, 7), 8)
+        )
+        assertEquals(
+            Pair(1, 4),
+            findSumOfTwo(listOf(1, 4, 2, 3, 4), 8)
         )
         assertEquals(
             Pair(0, 2),
             findSumOfTwo(listOf(1, 2, 3), 4)
+        )
+        assertEquals(
+            Pair(-1, -1),
+            findSumOfTwo(emptyList(), 1)
         )
         assertEquals(
             Pair(-1, -1),
