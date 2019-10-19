@@ -269,7 +269,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
     val all = mutableSetOf<String>()
     friends.values.forEach { v -> all += v }
     all -= result.keys
-    all.forEach { v -> result[v] = setOf() }
+    all.forEach { v -> result[v] = emptySet() }
     return result
 }
 
@@ -277,7 +277,7 @@ fun getHandshakesForMan(name: String, friends: Map<String, Set<String>>): Set<St
     val result = mutableSetOf<String>()
     val visited = mutableSetOf<String>()
     visited += name
-    val current = friends.getOrDefault(name, setOf()).toMutableSet()
+    val current = friends.getOrDefault(name, emptySet()).toMutableSet()
 
     while (current.isNotEmpty()) {
         val x = current.first()
@@ -285,7 +285,7 @@ fun getHandshakesForMan(name: String, friends: Map<String, Set<String>>): Set<St
         if (visited.contains(x)) continue
         result += x
         visited += x
-        val xFriends = friends.getOrDefault(x, setOf())
+        val xFriends = friends.getOrDefault(x, emptySet())
         current += xFriends
     }
     return result
@@ -314,15 +314,14 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     else {
         val newList = list.map { number - it }.toMutableList()
         val intersections = list.intersect(newList).toList()
-        return if (intersections.size > 1) {
-            Pair(
+        return when {
+            intersections.isEmpty() -> Pair(-1, -1)
+            intersections.size > 1 -> Pair(
                 list.indexOf(intersections[0]),
                 list.indexOf(number - intersections[0])
             )
-        } else {
-            if (newList.singleOrNull { it * 2 == number } != null)
-                Pair(-1, -1)
-            else {
+            newList.singleOrNull { it * 2 == number } != null -> Pair(-1, -1)
+            else -> {
                 val index = newList.indexOf(intersections[0])
                 newList[index] += 1
                 Pair(index, newList.indexOf(intersections[0]))
@@ -353,9 +352,17 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    if (treasures.isEmpty())
+        return emptySet()
+
+    if (treasures.size == 1) {
+        val x = treasures.entries.first()
+        return if (x.value.first <= capacity) setOf(x.key) else emptySet()
+    }
     var resultMax = setOf<String>()
     var maxCost = 0
     val newMap = treasures.toList().sortedByDescending { (_, value) -> value.second }
+
     for (i in 0 until newMap.size - 1) {
         val result: MutableSet<String> = mutableSetOf()
         var cost = 0

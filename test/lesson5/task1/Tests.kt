@@ -335,6 +335,10 @@ class Tests {
         )
         assertEquals(
             Pair(-1, -1),
+            findSumOfTwo(listOf(1, 1), 0)
+        )
+        assertEquals(
+            Pair(-1, -1),
             findSumOfTwo(listOf(0, 0), 1)
         )
         assertEquals(
@@ -374,6 +378,24 @@ class Tests {
     @Test
     @Tag("Impossible")
     fun bagPacking() {
+        assertEquals(
+            setOf("Кубок"),
+            bagPacking(
+                mapOf(
+                    "Кубок" to (1 to 1)
+                ),
+                1
+            )
+        )
+        assertEquals(
+            emptySet<String>(),
+            bagPacking(
+                mapOf(
+                    "Кубок" to (1 to 1)
+                ),
+                0
+            )
+        )
         assertEquals(
             setOf("Кубок", "Корона"),
             bagPacking(
