@@ -309,6 +309,21 @@ class Tests {
                 )
             )
         )
+        assertEquals(
+            mapOf(
+                "Marat" to setOf("Mikhail", "Sergey", "Sveta"),
+                "Sveta" to setOf("Marat", "Mikhail", "Sergey"),
+                "Mikhail" to setOf("Sveta", "Marat", "Sergey"),
+                "Sergey" to setOf()
+            ),
+            propagateHandshakes(
+                mapOf(
+                    "Marat" to setOf("Mikhail", "Sveta"),
+                    "Sveta" to setOf("Marat"),
+                    "Mikhail" to setOf("Sveta", "Sergey")
+                )
+            )
+        )
     }
 
     @Test
@@ -317,6 +332,14 @@ class Tests {
         assertEquals(
             Pair(-1, -1),
             findSumOfTwo(listOf(0), 1)
+        )
+        assertEquals(
+            Pair(-1, -1),
+            findSumOfTwo(listOf(0, 0), 1)
+        )
+        assertEquals(
+            Pair(0, 1),
+            findSumOfTwo(listOf(0, 1), 1)
         )
         assertEquals(
             Pair(-1, -1),
@@ -351,6 +374,45 @@ class Tests {
     @Test
     @Tag("Impossible")
     fun bagPacking() {
+        assertEquals(
+            setOf("Кубок", "Корона"),
+            bagPacking(
+                mapOf(
+                    "Кубок" to (500 to 2000),
+                    "Слиток" to (850 to 3000),
+                    "Корона" to (350 to 1001),
+                    "Алмаз" to (3000 to 6500),
+                    "Жезл" to (1500 to 500)
+                ),
+                850
+            )
+        )
+        assertEquals(
+            setOf("Кубок"),
+            bagPacking(
+                mapOf(
+                    "Кубок" to (500 to 2000),
+                    "Слиток" to (1000 to 4360),
+                    "Корона" to (2000 to 5000),
+                    "Алмаз" to (3000 to 6500),
+                    "Жезл" to (1500 to 500)
+                ),
+                850
+            )
+        )
+        assertEquals(
+            setOf("Слиток", "Алмаз"),
+            bagPacking(
+                mapOf(
+                    "Кубок" to (30 to 250),
+                    "Слиток" to (45 to 500),
+                    "Корона" to (50 to 350),
+                    "Алмаз" to (30 to 550),
+                    "Жезл" to (30 to 60)
+                ),
+                100
+            )
+        )
         assertEquals(
             setOf("Кубок"),
             bagPacking(

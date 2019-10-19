@@ -105,7 +105,7 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> =
  *   containsIn(mapOf("a" to "z"), mapOf("a" to "zee", "b" to "sweet")) -> false
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean =
-    a.toList().intersect(b.toList()).size == a.size
+    a.entries.intersect(b.entries).size == a.size
 
 /**
  * Простая
@@ -152,8 +152,7 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = (a.toSet().in
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> =
-    (mapA.toList() + (mapB.toList())).toSet().groupBy({ it.first }, { it.second })
-        .map { (k, v) -> Pair(k, v.joinToString()) }.toMap()
+    (mapA.entries + mapB.entries).groupBy({ it.key }, { it.value }).map { (k, v) -> Pair(k, v.joinToString()) }.toMap()
 
 /**
  * Средняя
@@ -200,8 +199,8 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  */
 
 fun canBuildFrom(chars: List<Char>, word: String): Boolean {
-    val setOfChars = HashSet(chars.map { it.toLowerCase() })
-    val setOfWord = HashSet(word.map { it.toLowerCase() })
+    val setOfChars = chars.map { it.toLowerCase() }.toSet()
+    val setOfWord = word.map { it.toLowerCase() }.toSet()
     return setOfWord.subtract(setOfChars).isEmpty()
 }
 
@@ -264,7 +263,33 @@ fun hasAnagrams(words: List<String>): Boolean {
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> {
+    val result = mutableMapOf<String, Set<String>>()
+    friends.keys.forEach { name -> result[name] = getHandshakesForMan(name, friends) }
+    val all = mutableSetOf<String>()
+    friends.values.forEach { v -> all += v }
+    all -= result.keys
+    all.forEach { v -> result[v] = setOf() }
+    return result
+}
+
+fun getHandshakesForMan(name: String, friends: Map<String, Set<String>>): Set<String> {
+    val result = mutableSetOf<String>()
+    val visited = mutableSetOf<String>()
+    visited += name
+    val current = friends.getOrDefault(name, setOf()).toMutableSet()
+
+    while (current.isNotEmpty()) {
+        val x = current.first()
+        current -= x
+        if (visited.contains(x)) continue
+        result += x
+        visited += x
+        val xFriends = friends.getOrDefault(x, setOf())
+        current += xFriends
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -284,7 +309,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    if (list.size < 2)
+    if (list.size < 2 || list.sum() < number)
         return Pair(-1, -1)
     else {
         val newList = list.map { number - it }.toMutableList()
@@ -327,4 +352,33 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    var resultMax = setOf<String>()
+    var maxCost = 0
+    val newMap = treasures.toList().sortedByDescending { (_, value) -> value.second }
+    for (i in 0 until newMap.size - 1) {
+        val result: MutableSet<String> = mutableSetOf()
+        var cost = 0
+        var weight = 0
+
+        if (newMap[i].second.component1() <= capacity) {
+            cost += newMap[i].second.component2()
+            result += newMap[i].first
+            weight += newMap[i].second.component1()
+        }
+        for (j in i + 1 until newMap.size) {
+            if (weight == capacity)
+                break
+            if (newMap[j].second.component1() + weight <= capacity) {
+                cost += newMap[j].second.component2()
+                result += newMap[j].first
+                weight += newMap[j].second.component1()
+            }
+        }
+        if (cost > maxCost) {
+            maxCost = cost
+            resultMax = result
+        }
+    }
+    return resultMax
+}
