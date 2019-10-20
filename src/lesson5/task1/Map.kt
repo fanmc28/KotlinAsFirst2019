@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import kotlin.math.max
+
 /**
  * Пример
  *
@@ -352,40 +354,32 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *   ) -> emptySet()
  */
 fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
-    if (treasures.isEmpty())
-        return emptySet()
+    val treasuresList = treasures.toList()
+    val n = treasuresList.size
+    val dp: Array<IntArray> = Array(capacity + 1) { IntArray(n + 1) }
 
-    if (treasures.size == 1) {
-        val x = treasures.entries.first()
-        return if (x.value.first <= capacity) setOf(x.key) else emptySet()
-    }
-    var resultMax = setOf<String>()
-    var maxCost = 0
-    val newMap = treasures.toList().sortedByDescending { (_, value) -> value.second }
-
-    for (i in 0 until newMap.size - 1) {
-        val result: MutableSet<String> = mutableSetOf()
-        var cost = 0
-        var weight = 0
-
-        if (newMap[i].second.component1() <= capacity) {
-            cost += newMap[i].second.component2()
-            result += newMap[i].first
-            weight += newMap[i].second.component1()
-        }
-        for (j in i + 1 until newMap.size) {
-            if (weight == capacity)
-                break
-            if (newMap[j].second.component1() + weight <= capacity) {
-                cost += newMap[j].second.component2()
-                result += newMap[j].first
-                weight += newMap[j].second.component1()
+    val result = mutableSetOf<String>()
+    for (j in 1..n) {
+        for (w in 1..capacity) {
+            if (treasuresList[j - 1].second.first <= w) {
+                dp[w][j] =
+                    max(
+                        dp[w][j - 1],
+                        dp[w - treasuresList[j - 1].second.first][j - 1] + treasuresList[j - 1].second.second
+                    )
+            } else {
+                dp[w][j] = dp[w][j - 1]
             }
         }
-        if (cost > maxCost) {
-            maxCost = cost
-            resultMax = result
+    }
+
+    var k = capacity
+    for (i in n downTo 1) {
+        if (dp[k][i] != dp[k][i - 1]) {
+            result += treasuresList[i - 1].first
+            k -= treasuresList[i - 1].second.first
         }
     }
-    return resultMax
+    return result
 }
+
