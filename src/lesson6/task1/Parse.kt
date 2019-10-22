@@ -2,6 +2,8 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
+
 /**
  * Пример
  *
@@ -69,7 +71,41 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+val months: List<String> = listOf(
+    "",
+    "января",
+    "февраля",
+    "марта",
+    "апреля",
+    "мая",
+    "июня",
+    "июля",
+    "августа",
+    "сентября",
+    "октября",
+    "ноября",
+    "декабря"
+)
+
+fun dateStrToDigit(str: String): String {
+    val result = str.split(" ").toMutableList()
+    val y = str.matches(Regex("""\d+\s[а-я]+\s\d+"""))
+    if (result.size < 3 || !y || result[1] !in months || daysInMonth(
+            months.indexOf(result[1]),
+            result[2].toInt()
+        ) < result[0].toInt()
+    ) return ""
+
+    val day = result[0].toInt()
+    if (day in 1..9)
+        result[0] = "0$day"
+    val month = months.indexOf(result[1])
+    if (month in 0..9)
+        result[1] = "0$month"
+    else result[1] = "$month"
+
+    return result.joinToString(separator = ".")
+}
 
 /**
  * Средняя
@@ -81,7 +117,25 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val result = digital.split(".").toMutableList()
+    val y = digital.matches(Regex("""\d+\.\d+\.\d+"""))
+    if (result.size != 3 || !y)
+        return ""
+
+    val day = result[0].toInt()
+    val month = result[1].toInt()
+    if (month !in 1..12)
+        return ""
+
+    val x = months[month]
+    if (daysInMonth(month, result[2].toInt()) < day)
+        return ""
+
+    result[0] = "$day"
+    result[1] = x
+    return result.joinToString(separator = " ")
+}
 
 /**
  * Средняя

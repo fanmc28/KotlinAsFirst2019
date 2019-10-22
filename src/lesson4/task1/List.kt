@@ -5,6 +5,7 @@ package lesson4.task1
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
 import lesson3.task1.digitNumber
+import lesson3.task1.isPrime
 import lesson3.task1.minDivisor
 import kotlin.math.*
 
@@ -224,8 +225,6 @@ fun factorize(n: Int): List<Int> {
     return list
 }
 
-fun isPrime(n: Int): Boolean = n / minDivisor(n) == 1
-
 /**
  * Сложная
  *
@@ -243,15 +242,15 @@ fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
+    if (n == 0)
+        return listOf(0)
     var x = n
     val list: MutableList<Int> = mutableListOf()
     while (x >= 1) {
         list.add(x % base)
         x /= base
     }
-    return if (n == 0)
-        listOf(0)
-    else list.reversed()
+    return list.reversed()
 }
 
 /**
@@ -265,17 +264,8 @@ fun convert(n: Int, base: Int): List<Int> {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, n.toString(base) и подобные), запрещается.
  */
-fun convertToString(n: Int, base: Int): String {
-    val r = convert(n, base)
-    val result: MutableList<Char> = listOf<Char>().toMutableList()
-    for (i in 0 until r.size)
-        if (r[i] > 9) {
-            val index = r[i] - 10
-            result.add('a' + index)
-        } else result.add(('0' + r[i]))
-    return result.joinToString(separator = "")
-}
-
+fun convertToString(n: Int, base: Int): String =
+    convert(n, base).map { if (it > 9) 'a' + it - 10 else it }.joinToString(separator = "")
 
 /**
  * Средняя
@@ -306,19 +296,8 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * Использовать функции стандартной библиотеки, напрямую и полностью решающие данную задачу
  * (например, str.toInt(base)), запрещается.
  */
-fun decimalFromString(str: String, base: Int): Int {
-    val length = str.length - 1
-    var x = 1
-    var k = 0
-    for (i in length downTo 0) {
-        val s = str[i]
-        k += if (s <= '9')
-            (s - '0') * x
-        else (s - 'a' + 10) * x
-        x *= base
-    }
-    return k
-}
+fun decimalFromString(str: String, base: Int): Int =
+    decimal(str.map { if (it > '9') it - 'a' + 10 else it - '0' }, base)
 
 /**
  * Сложная
