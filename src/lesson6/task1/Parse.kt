@@ -88,23 +88,22 @@ val months: List<String> = listOf(
 )
 
 fun dateStrToDigit(str: String): String {
-    val result = str.split(" ").toMutableList()
+    val result = str.split(" ")
+    if (result.size < 3)
+        return ""
+
     val y = str.matches(Regex("""\d+\s[а-я]+\s\d+"""))
-    if (result.size < 3 || !y || result[1] !in months || daysInMonth(
+    if (!y || result[1] !in months || daysInMonth(
             months.indexOf(result[1]),
             result[2].toInt()
         ) < result[0].toInt()
     ) return ""
 
     val day = result[0].toInt()
-    if (day in 1..9)
-        result[0] = "0$day"
+    val year = result[2]
     val month = months.indexOf(result[1])
-    if (month in 0..9)
-        result[1] = "0$month"
-    else result[1] = "$month"
 
-    return result.joinToString(separator = ".")
+    return String.format("%02d.%02d.%s", day, month, year)
 }
 
 /**
@@ -118,7 +117,7 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val result = digital.split(".").toMutableList()
+    val result = digital.split(".")
     val y = digital.matches(Regex("""\d+\.\d+\.\d+"""))
     if (result.size != 3 || !y)
         return ""
@@ -128,13 +127,12 @@ fun dateDigitToStr(digital: String): String {
     if (month !in 1..12)
         return ""
 
-    val x = months[month]
-    if (daysInMonth(month, result[2].toInt()) < day)
+    val monthName = months[month]
+    val year = result[2].toInt()
+    if (daysInMonth(month, year) < day)
         return ""
 
-    result[0] = "$day"
-    result[1] = x
-    return result.joinToString(separator = " ")
+    return "$day $monthName $year"
 }
 
 /**
