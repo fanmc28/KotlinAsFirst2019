@@ -89,7 +89,7 @@ val months: List<String> = listOf(
 
 fun dateStrToDigit(str: String): String {
     val result = str.split(" ")
-    if (result.size < 3)
+    if (result.size != 3)
         return ""
 
     val y = str.matches(Regex("""\d+\s[а-я]+\s\d+"""))
@@ -149,7 +149,17 @@ fun dateDigitToStr(digital: String): String {
  *
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    var y = phone.replace(Regex("""[\-\s]"""), "")
+    if (y.isEmpty())
+        return ""
+    val prefix = if (y[0] == '+') "+" else ""
+    y = y.replace(Regex("""[+]"""), "")
+
+    if (!y.matches(Regex("""\d+|\d*\(\d+\)\d*""")))
+        return ""
+    return String.format("%s%s", prefix, y.replace(Regex("""[()]"""), ""))
+}
 
 /**
  * Средняя
