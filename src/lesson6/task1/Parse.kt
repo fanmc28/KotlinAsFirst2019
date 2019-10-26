@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
+import java.lang.IllegalArgumentException
 
 /**
  * Пример
@@ -207,7 +208,18 @@ fun bestHighJump(jumps: String): Int {
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    if (!expression.matches(Regex("""\d+|((\d+\s)([+\-])\s)+\d+""")))
+        throw IllegalArgumentException(expression)
+    val x = expression.split(" ").toList()
+    var result = x[0].toInt()
+    for (i in 1 until x.size - 1 step 2) {
+        if (x[i] == "+")
+            result += x[i + 1].toInt()
+        else result -= x[i + 1].toInt()
+    }
+    return result
+}
 
 /**
  * Сложная
