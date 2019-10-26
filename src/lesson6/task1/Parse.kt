@@ -190,7 +190,13 @@ fun bestLongJump(jumps: String): Int {
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    if (!jumps.matches(Regex("""(\d+\s)([%+\-])+|((\d+\s)([%+\-])+\s)+(\d+\s)([%+\-])+""")))
+        return -1
+    val z = """(\d+\s\+)""".toRegex().findAll(jumps)
+    val result = z.map { it.value.filter { i -> (i in '0'..'9') } }.map { it.toInt() }.max()
+    return result ?: -1
+}
 
 /**
  * Сложная
