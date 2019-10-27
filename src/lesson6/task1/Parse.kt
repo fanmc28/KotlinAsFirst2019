@@ -255,9 +255,9 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше либо равны нуля.
  */
 fun mostExpensive(description: String): String {
-    if (!description.matches(Regex("""([А-я]+\s\d+.\d+)|(([А-я]+\s\d+.\d+);\s)+([А-я]+\s\d+.\d+)""")))
+    if (!description.matches(Regex("""([А-я]+\s(\d+.\d+|0))|(([А-я]+\s(\d+.\d+|0));\s)+([А-я]+\s(\d+.\d+|0))""")))
         return ""
-    val x = description.split("; ").map { it.split(" ") }//.map { it.component2() }
+    val x = description.split("; ").map { it.split(" ") }
     val maxCost = x.map { it.component2().toDouble() }.max()
     val result = x.filter { it.component2().toDouble() == maxCost }
     return result[0].component1()
@@ -274,7 +274,34 @@ fun mostExpensive(description: String): String {
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+val romanNumber: Map<Char, Int> = mapOf(
+    'I' to 1,
+    'X' to 10,
+    'C' to 100,
+    'M' to 1000,
+    'V' to 5,
+    'L' to 50,
+    'D' to 500
+)
+
+fun fromRoman(roman: String): Int {
+    if (!roman.matches(Regex("""[IXCMVLD]+""")))
+        return -1
+    if (roman.isEmpty())
+        return 0
+    val l = roman.length
+    var result = 0
+    for (i in 0 until l - 1) {
+        val value = romanNumber[roman[i]]
+        val next = romanNumber[roman[i + 1]]
+        if (value != null) {
+            result += if (value < next!!)
+                -value
+            else value
+        }
+    }
+    return result + (romanNumber[roman[l - 1]] ?: error(""))
+}
 
 /**
  * Очень сложная
