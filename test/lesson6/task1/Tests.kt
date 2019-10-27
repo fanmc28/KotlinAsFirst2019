@@ -143,6 +143,9 @@ class Tests {
     @Tag("Hard")
     fun mostExpensive() {
         assertEquals("а", mostExpensive("а 0"))
+        assertEquals("a", mostExpensive("a 0"))
+        assertEquals("", mostExpensive("a b 0"))
+        assertEquals("Ba", mostExpensive("Ba 0"))
         assertEquals("Хлеб", mostExpensive("Хлеб 0; Молоко 0; Курица 0; Конфеты 0"))
         assertEquals("Курица", mostExpensive("Хлеб 39.9; Молоко 62.5; Курица 184.0; Конфеты 184.0"))
         assertEquals("Курица", mostExpensive("Хлеб 39.9; Молоко 62.5; Курица 184.0; Конфеты 89.9"))
@@ -165,9 +168,9 @@ class Tests {
     @Test
     @Tag("Impossible")
     fun computeDeviceCells() {
+        assertEquals(listOf(1, 1, 1, 1, 1, 0, 0, 0, 0, 0), computeDeviceCells(10, "- <<<<< +[>+]", 10000))
         assertEquals(listOf(0, 0, 0, 0, 0, 1, 1, 1, 1, 1), computeDeviceCells(10, "+>+>+>+>+", 10000))
         assertEquals(listOf(-1, -1, -1, -1, -1, 0, 0, 0, 0, 0), computeDeviceCells(10, "<-<-<-<-<-", 10000))
-        assertEquals(listOf(1, 1, 1, 1, 1, 0, 0, 0, 0, 0), computeDeviceCells(10, "- <<<<< +[>+]", 10000))
         assertEquals(
             listOf(0, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0),
             computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 10000)

@@ -4,6 +4,7 @@ package lesson6.task1
 
 import lesson2.task2.daysInMonth
 import java.lang.IllegalArgumentException
+import java.util.*
 
 /**
  * Пример
@@ -255,7 +256,7 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше либо равны нуля.
  */
 fun mostExpensive(description: String): String {
-    if (!description.matches(Regex("""([А-я]+\s(\d+.\d+|0))|(([А-я]+\s(\d+.\d+|0));\s)+([А-я]+\s(\d+.\d+|0))""")))
+    if (!description.matches(Regex("""([А-яA-z]+\s(\d+.\d+|0))|(([А-яA-z]+\s(\d+.\d+|0));\s)+([А-яA-z]+\s(\d+.\d+|0))""")))
         return ""
     val x = description.split("; ").map { it.split(" ") }
     val maxCost = x.map { it.component2().toDouble() }.max()
@@ -339,4 +340,68 @@ fun fromRoman(roman: String): Int {
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    val t: Stack<Int> = Stack()
+    val gotoNext: MutableMap<Int, Int> = mutableMapOf()
+    val gotoPrev: MutableMap<Int, Int> = mutableMapOf()
+
+    val otherCommands = setOf(' ', '<', '>', '+', '-')
+
+    fun checkCommands() {
+        for (i in 0 until commands.length) {
+            when (commands[i]) {
+                '[' -> t.push(i)
+                ']' -> {
+                    if (t.isEmpty())
+                        throw IllegalArgumentException()
+
+                    val lastOpenPos = t.pop()
+                    gotoNext[lastOpenPos] = i
+                    gotoPrev[i] = lastOpenPos
+                }
+                else -> {
+                    if (!otherCommands.contains(commands[i]))
+                        throw  IllegalArgumentException()
+                }
+            }
+        }
+        if (!t.isEmpty())
+            throw IllegalArgumentException()
+    }
+
+    fun runCommands(): List<Int> {
+        var i = 0
+        val result = IntArray(cells)
+        var limit1 = 0
+        var startPos: Int = cells / 2
+        while (i < commands.length) {
+            if (limit == limit1)
+                return result.toList()
+
+            if (startPos > cells - 1 || startPos < 0)
+                throw IllegalStateException()
+            when (commands[i]) {
+                '+' -> result[startPos] += 1
+                '-' -> result[startPos] -= 1
+                '>' -> startPos += 1
+                '<' -> startPos -= 1
+                '[' -> {
+                    if (result[startPos] == 0)
+                        i = gotoNext[i]!!
+                }
+                ']' -> {
+                    if (result[startPos] != 0)
+                        i = gotoPrev[i]!!
+                }
+            }
+            limit1++
+            i++
+        }
+        return result.toList()
+    }
+
+    checkCommands()
+
+    return runCommands()
+
+}
