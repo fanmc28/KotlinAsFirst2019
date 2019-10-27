@@ -142,6 +142,7 @@ class Tests {
     @Test
     @Tag("Hard")
     fun mostExpensive() {
+        assertEquals(",", mostExpensive(", 0"))
         assertEquals("а", mostExpensive("а 0"))
         assertEquals("a", mostExpensive("a 0"))
         assertEquals("", mostExpensive("a b 0"))
@@ -168,6 +169,7 @@ class Tests {
     @Test
     @Tag("Impossible")
     fun computeDeviceCells() {
+        assertThrows(IllegalStateException::class.java) { computeDeviceCells(1, "<", 500) }
         assertEquals(listOf(1, 1, 1, 1, 1, 0, 0, 0, 0, 0), computeDeviceCells(10, "- <<<<< +[>+]", 10000))
         assertEquals(listOf(0, 0, 0, 0, 0, 1, 1, 1, 1, 1), computeDeviceCells(10, "+>+>+>+>+", 10000))
         assertEquals(listOf(-1, -1, -1, -1, -1, 0, 0, 0, 0, 0), computeDeviceCells(10, "<-<-<-<-<-", 10000))

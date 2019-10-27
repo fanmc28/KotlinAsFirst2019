@@ -237,7 +237,7 @@ fun firstDuplicateIndex(str: String): Int {
         return -1
     var result = -1
     for (i in 0 until x.size - 1) {
-        if (x[i].length == x[i + 1].length && x[i] == x[i + 1])
+        if (x[i] == x[i + 1])
             return result + 1
         result += x[i].length + 1
     }
@@ -256,7 +256,7 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше либо равны нуля.
  */
 fun mostExpensive(description: String): String {
-    if (!description.matches(Regex("""([А-яA-z]+\s(\d+.\d+|0))|(([А-яA-z]+\s(\d+.\d+|0));\s)+([А-яA-z]+\s(\d+.\d+|0))""")))
+    if (!description.matches(Regex("""(\S+\s(\d+.\d+|0))|((\S+\s(\d+.\d+|0));\s)+(\S+\s(\d+.\d+|0))""")))
         return ""
     val x = description.split("; ").map { it.split(" ") }
     val maxCost = x.map { it.component2().toDouble() }.max()
@@ -378,13 +378,19 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             if (limit == limit1)
                 return result.toList()
 
-            if (startPos > cells - 1 || startPos < 0)
-                throw IllegalStateException()
             when (commands[i]) {
                 '+' -> result[startPos] += 1
                 '-' -> result[startPos] -= 1
-                '>' -> startPos += 1
-                '<' -> startPos -= 1
+                '>' -> {
+                    startPos += 1
+                    if (startPos > cells - 1)
+                        throw IllegalStateException()
+                }
+                '<' -> {
+                    startPos -= 1
+                    if (startPos < 0)
+                        throw IllegalStateException()
+                }
                 '[' -> {
                     if (result[startPos] == 0)
                         i = gotoNext[i]!!
