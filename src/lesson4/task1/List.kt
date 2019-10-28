@@ -221,7 +221,7 @@ fun factorize(n: Int): List<Int> {
         k /= x
     } while (!isPrime(k))
 
-    list.add(minDivisor(k))
+    list.add(k)
     return list
 }
 
