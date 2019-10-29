@@ -210,20 +210,21 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
  */
 fun factorize(n: Int): List<Int> {
     var k = n
+    val list: MutableList<Int> = mutableListOf()
     if (isPrime(k))
         return listOf(k)
-
-    val list: MutableList<Int> = mutableListOf()
-
-    do {
+    else {
         val x = minDivisor(k)
-        list.add(x)
-        k /= x
-    } while (!isPrime(k))
-
-    list.add(k)
+        for (i in x..(k / x)) {
+            while (k % i == 0) {
+                list.add(i)
+                k /= i
+            }
+        }
+    }
     return list
 }
+
 
 /**
  * Сложная
