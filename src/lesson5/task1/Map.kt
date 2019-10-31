@@ -94,7 +94,7 @@ fun buildWordSet(text: List<String>): MutableSet<String> {
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
 fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> =
-    grades.map { (k, v) -> Pair(v, k) }.groupBy({ it.first }, { it.second })
+    grades.entries.groupBy({ it.value }, { it.key })
 
 /**
  * Простая
