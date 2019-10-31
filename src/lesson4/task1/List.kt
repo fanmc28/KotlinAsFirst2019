@@ -211,16 +211,16 @@ fun accumulate(list: MutableList<Int>): MutableList<Int> {
 fun factorize(n: Int): List<Int> {
     var k = n
     val list: MutableList<Int> = mutableListOf()
-    if (isPrime(k))
-        return listOf(k)
-    else {
-        val x = minDivisor(k)
-        for (i in x..(k / x)) {
-            while (k % i == 0) {
-                list.add(i)
-                k /= i
-            }
+    val x = minDivisor(k)
+    for (i in x..sqrt(k.toDouble()).toInt()) {
+        while (k % i == 0) {
+            list.add(i)
+            k /= i
         }
+    }
+
+    if (k != 1) {
+        list.add(k)
     }
     return list
 }
