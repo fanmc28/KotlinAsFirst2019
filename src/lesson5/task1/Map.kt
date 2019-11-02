@@ -134,7 +134,7 @@ fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) =
  * В выходном списке не должно быть повторяюихся элементов,
  * т. е. whoAreInBoth(listOf("Марат", "Семён, "Марат"), listOf("Марат", "Марат")) == listOf("Марат")
  */
-fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = (a.toSet().intersect(b.toSet())).toList()
+fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.intersect(b).toList()
 
 /**
  * Средняя
@@ -154,7 +154,7 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = (a.toSet().in
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
 fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> =
-    (mapA.entries + mapB.entries).groupBy({ it.key }, { it.value }).map { (k, v) -> Pair(k, v.joinToString()) }.toMap()
+    (mapA.entries + mapB.entries).groupBy({ it.key }, { it.value }).map { (k, v) -> k to v.joinToString() }.toMap()
 
 /**
  * Средняя
@@ -167,7 +167,7 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =
-    stockPrices.groupBy({ it.first }, { it.second }).map { (k, v) -> Pair(k, v.average()) }.toMap()
+    stockPrices.groupBy({ it.first }, { it.second }).map { (k, v) -> k to v.average() }.toMap()
 
 /**
  * Средняя
@@ -185,7 +185,7 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *   ) -> "Мария"
  */
 fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
-    val x = stuff.map { (k, v) -> Pair(v.first, Pair(k, v.second)) }.groupBy({ it.first }, { it.second })
+    val x = stuff.map { (k, v) -> v.first to (k to v.second) }.groupBy({ it.first }, { it.second })
     val l = x[kind] ?: return null
     return l.minBy { it.second }?.first
 }
@@ -220,10 +220,7 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean {
  */
 fun extractRepeats(list: List<String>): Map<String, Int> =
     list.groupBy { i -> i }.filter { (_, value) -> value.size >= 2 }.map { (key, value) ->
-        Pair(
-            key,
-            value.size
-        )
+        key to value.size
     }.toMap()
 
 /**
