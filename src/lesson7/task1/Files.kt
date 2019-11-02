@@ -268,7 +268,9 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
         val hasUppercase = s.isUpperCase()
         if (hasUppercase) {
             val z = x.getValue(s.toLowerCase())
-            return z[0].toUpperCase().toString() + z.removeRange(0, 1).toLowerCase()
+            if (z.isNotEmpty())
+                return z[0].toUpperCase().toString() + z.removeRange(0, 1).toLowerCase()
+            return z
         }
         return x[s]?.toLowerCase()
     }
@@ -515,7 +517,45 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val outputStream = File(outputName).bufferedWriter()
+    val result = (lhv * rhv).toString()
+    val resultLength = result.length
+    val x = lhv.toString()
+    var y = rhv.toString()
+    val rhvLength = y.length
+
+    fun str(x: String, y: String, pos: Int): String {
+        val z = (x.toInt() * y.toInt()).toString()
+        val length = z.length
+
+        return if (pos == 0)
+            " ".repeat(resultLength + 1 - length) + z
+        else "+" + " ".repeat(resultLength - pos - length) + z
+    }
+
+    with(outputStream) {
+        write(" ".repeat(resultLength + 1 - x.length) + x)
+        newLine()
+        write("*" + " ".repeat(resultLength - rhvLength) + y)
+        newLine()
+        write("-".repeat(resultLength + 1))
+        newLine()
+    }
+
+
+    for (i in 0 until rhvLength) {
+        val number = y.toInt() % 10
+        outputStream.write(str(x, number.toString(), i))
+        outputStream.newLine()
+        y = (y.toInt() / 10).toString()
+    }
+
+    with(outputStream) {
+        write("-".repeat(resultLength + 1))
+        newLine()
+        write(" $result")
+        close()
+    }
 }
 
 
