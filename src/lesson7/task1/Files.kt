@@ -603,6 +603,9 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                 if (number / rhv != 0) {
                     if (number % rhv == 0) {
                         result.add("$number")
+                        if (result.size % 2 == 0) {
+                            result.add("$number")
+                        }
                         if (i != lhvLength - 1)
                             result.add("0${lhvToString[i + 1]}")
                         else result.add("0")
