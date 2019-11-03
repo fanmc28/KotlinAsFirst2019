@@ -623,7 +623,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             }
         }
     }
-    result.add(y)
+    if (result.size > 2 || answer == 0)
+        result.add(y)
 
     val n = result.map { it.toString() }.toMutableList()
     if (n.size > 1) {
