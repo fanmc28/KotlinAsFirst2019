@@ -611,7 +611,9 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
                         if (result.isNotEmpty()) {
                             if (result.size % 2 == 0) {
                                 result.add("$subtraction")
-                                result.add("${number - subtraction}")
+                                if (i != lhvLength - 1)
+                                    result.add("${number - subtraction}${lhvToString[i + 1]}")
+                                else result.add("${number - subtraction}")
                             } else {
                                 result.add("$number")
                                 result.add("$subtraction")
