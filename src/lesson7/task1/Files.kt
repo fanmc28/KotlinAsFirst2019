@@ -2,6 +2,7 @@
 
 package lesson7.task1
 
+import kotlinx.html.I
 import ru.spbstu.wheels.toMap
 import java.io.File
 
@@ -592,8 +593,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
 
     var y = 0
     for (i in 0 until lhvToString.length) {
-        val s = lhvToString[i]
-        val z = "$s".toInt()
+        val z = "${lhvToString[i]}".toInt()
         if (z / rhv == 0) {
             y = y * 10 + z
             if (y / rhv != 0) {
@@ -612,9 +612,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             if (z % rhv == 0) {
                 result.add(z)
                 if (i != lhvToString.length - 1) {
-                    val b = lhvToString[i + 1]
-                    val c = "$b".toInt()
-                    result.add(c)
+                    result.add("${lhvToString[i + 1]}".toInt())
                 }
             } else {
                 val k = z - z % rhv
@@ -623,8 +621,13 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             }
         }
     }
-    if (result.size > 2 || answer == 0)
+    if (result.size % 2 != 0)
         result.add(y)
+
+    if (result.isEmpty()) {
+        result.add(0)
+        result.add(y)
+    }
 
     val n = result.map { it.toString() }.toMutableList()
     if (n.size > 1) {
@@ -654,6 +657,19 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         } else with(outputStream) {
             write("-0" + " ".repeat(3) + "0")
             newLine()
+            write("-".repeat(2))
+            newLine()
+        }
+    }
+
+    fun output(range: Int, rangeTwo: Int, now: String, next: String) {
+        with(outputStream) {
+            write(" ".repeat(range) + now)
+            newLine()
+            write(" ".repeat(rangeTwo) + "-" + next)
+            newLine()
+            write(" ".repeat(rangeTwo) + "-".repeat(next.length + 1))
+            newLine()
         }
     }
 
@@ -667,39 +683,17 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             rangeTwo = range
         if (last.toInt() != 0) {
             range += last.length - 1
-            with(outputStream) {
-                write(" ".repeat(range) + now)
-                newLine()
-                write(" ".repeat(rangeTwo) + "-" + next)
-                newLine()
-                write(" ".repeat(rangeTwo) + "-".repeat(next.length + 1))
-                newLine()
-            }
+            output(range, rangeTwo, now, next)
             range += if (now[0] != '0')
                 now.length - (now.toInt() - next.toInt()).toString().length
             else 1
         } else {
-            with(outputStream) {
-                write(" ".repeat(range) + now)
-                newLine()
-                write(" ".repeat(rangeTwo) + "-" + next)
-                newLine()
-                write(" ".repeat(rangeTwo) + "-".repeat(next.length + 1))
-                newLine()
-            }
+            output(range, rangeTwo, now, next)
         }
     }
 
-
     val m = n.last()
-    if (n.size != 1)
-        outputStream.write(" ".repeat(lhvToString.length - m.length) + " $m")
-    else with(outputStream) {
-        write("-".repeat(2))
-        newLine()
-        write(" ".repeat(lhvToString.length - m.length) + " $m")
-    }
+    outputStream.write(" ".repeat(lhvToString.length - m.length) + " $m")
 
     outputStream.close()
 }
-
