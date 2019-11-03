@@ -580,6 +580,121 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val outputStream = File(outputName).bufferedWriter()
+    val result = mutableListOf<Int>()
+    val lhvToString = lhv.toString()
+    val answer = lhv / rhv
+
+    with(outputStream) {
+        write(" $lhv | $rhv")
+        newLine()
+    }
+
+    var y = 0
+    for (i in 0 until lhvToString.length) {
+        val s = lhvToString[i]
+        val z = "$s".toInt()
+        if (z / rhv == 0) {
+            y = y * 10 + z
+            if (y / rhv != 0) {
+                if (result.isNotEmpty())
+                    result.add(y)
+                val k = y - y % rhv
+                result.add(k)
+                y -= k
+            } else {
+                if (result.isNotEmpty()) {
+                    result.add(y)
+                    result.add(0)
+                }
+            }
+        } else {
+            if (z % rhv == 0) {
+                result.add(z)
+                if (i != lhvToString.length - 1)
+                    result.add(z)
+            } else {
+                val k = z - z % rhv
+                result.add(k)
+                result.add(z - k)
+            }
+        }
+    }
+    result.add(y)
+
+    val n = result.map { it.toString() }.toMutableList()
+    if (n.size > 1) {
+        for (i in 1 until n.size - 1) {
+            val f = n[i]
+            if (n[i] == n[i - 1])
+                n[i] = "0$f"
+        }
+    }
+
+    val k = n[0]
+    val kLen = k.length
+    if (answer != 0) {
+        with(outputStream) {
+            write("-$k" + " ".repeat(lhvToString.length - kLen + 3) + "$answer")
+            newLine()
+            write("-".repeat(kLen + 1))
+            newLine()
+        }
+    } else {
+        if (lhvToString.length != 1) with(outputStream) {
+            write(" ".repeat(lhvToString.length - kLen - 1) + "-" + "0" + " ".repeat(3) + "0")
+            newLine()
+            write("-".repeat(kLen))
+            newLine()
+        } else with(outputStream) {
+            write("-0" + " ".repeat(3) + "0")
+            newLine()
+        }
+    }
+
+    var range = 1
+    for (i in 1..n.size - 2 step 2) {
+        val last = n[i - 1]
+        val now = n[i]
+        val next = n[i + 1]
+        var rangeTwo = lhvToString.length - now.length
+        if (now[0] == '0')
+            rangeTwo = range
+        if (last.toInt() != 0) {
+            range += last.length - 1
+            with(outputStream) {
+                write(" ".repeat(range) + now)
+                newLine()
+                write(" ".repeat(rangeTwo) + "-" + next)
+                newLine()
+                write(" ".repeat(rangeTwo) + "-".repeat(next.length + 1))
+                newLine()
+            }
+            range += if (now[0] != '0')
+                now.length - (now.toInt() - next.toInt()).toString().length
+            else 1
+        } else {
+            with(outputStream) {
+                write(" ".repeat(range) + now)
+                newLine()
+                write(" ".repeat(rangeTwo) + "-" + next)
+                newLine()
+                write(" ".repeat(rangeTwo) + "-".repeat(next.length + 1))
+                newLine()
+            }
+        }
+    }
+
+
+    val m = n.last()
+    if (n.size != 1)
+        outputStream.write(" ".repeat(lhvToString.length - m.length) + " $m")
+    else with(outputStream) {
+        write("-".repeat(2))
+        newLine()
+        write(" ".repeat(lhvToString.length - m.length) + " $m")
+    }
+
+    outputStream.close()
 }
 
