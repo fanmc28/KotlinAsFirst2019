@@ -637,9 +637,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         return result
     }
 
-    val result = getArrayNumber()
-
-    fun start() {
+    fun start(result: List<String>) {
         val k = result[0]
         val kLength = k.length
         val answer = lhv / rhv
@@ -663,9 +661,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         }
     }
 
-    start()
-
-    fun theMiddle() {
+    fun theMiddle(result: List<String>) {
 
         fun output(range: Int, rangeTwo: Int, now: String, next: String) {
             with(outputStream) {
@@ -678,29 +674,20 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             }
         }
 
-        var range = 1
+        var range = result[0].length
         for (i in 1..result.size - 2 step 2) {
-            val last = result[i - 1]
             val now = result[i]
             val next = result[i + 1]
-            var rangeTwo = lhvLength - now.length
-            if (now[0] == '0')
-                rangeTwo = range
-            if (last.toInt() != 0) {
-                range += last.length - 1
-                output(range, rangeTwo, now, next)
-                range += if (now[0] != '0')
-                    now.length - (now.toInt() - next.toInt()).toString().length
-                else 1
-            } else {
-                output(range, rangeTwo, now, next)
-            }
+            val rangeTwo = range - 1 + (now.length - next.length)
+
+            output(range, rangeTwo, now, next)
+            if (next != "0" || now == "00") {
+                range = rangeTwo + next.length
+            } else range += rangeTwo - now.length - 1
         }
     }
 
-    theMiddle()
-
-    fun end() {
+    fun end(result: List<String>) {
         val m = result.last()
         val first = result[0]
         if (first != "0" && (lhvLength == first.length || result.size > 2) || first == "0" && result.size == 2 && lhvLength == first.length)
@@ -708,7 +695,10 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         else outputStream.write(" ".repeat(lhvLength - m.length) + m)
     }
 
-    end()
+    val result = getArrayNumber()
+    start(result)
+    theMiddle(result)
+    end(result)
 
     outputStream.close()
 }
