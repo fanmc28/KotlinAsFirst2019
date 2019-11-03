@@ -582,57 +582,61 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
     val lhvToString = lhv.toString()
-    val answer = lhv / rhv
     val lhvLength = lhvToString.length
 
     fun getArrayNumber(): List<String> {
         var number = 0
-        val result = mutableListOf<Int>()
+        val result = mutableListOf<String>()
         for (i in 0 until lhvLength) {
             val numeral = "${lhvToString[i]}".toInt()
             number = number * 10 + numeral
             val subtraction = number - number % rhv
 
-            if (number / rhv != 0) {
-                if (number % rhv == 0) {
-                    result.add(number)
-                    if (i != lhvLength - 1) {
-                        result.add("${lhvToString[i + 1]}".toInt())
-                    }
-                    number = 0
+            if (0 == number) {
+                result.add("0")
+                if (i == lhvLength - 1) {
+                    result.add("0")
                 } else {
-                    if (result.isNotEmpty())
-                        result.add(number)
-                    result.add(subtraction)
-                    number -= subtraction
+                    result.add("0${lhvToString[i + 1]}")
                 }
             } else {
-                if (result.isNotEmpty()) {
-                    result.add(number)
-                    if (number != 0)
-                        result.add(0)
-                    else if (i != lhvLength - 1)
-                        result.add("${lhvToString[i + 1]}".toInt())
+                if (number / rhv != 0) {
+                    if (number % rhv == 0) {
+                        result.add("$number")
+                        if (i != lhvLength - 1)
+                            result.add("0${lhvToString[i + 1]}")
+                        else result.add("0")
+                        number = 0
+                    } else {
+                        if (result.isNotEmpty()) {
+                            if (result.size % 2 == 0) {
+                                result.add("$subtraction")
+                                result.add("${number - subtraction}")
+                            } else {
+                                result.add("$number")
+                                result.add("$subtraction")
+                            }
+                        } else result.add("$subtraction")
+                        number -= subtraction
+                    }
+                } else {
+                    if (i == lhvLength - 1) {
+                        result.add("0")
+                        result.add("$number")
+                    } else if (result.isNotEmpty()) {
+                        result.add("$number")
+                        result.add("0")
+                    }
                 }
             }
         }
 
-        if (result.isEmpty())
-            result.add(0)
+        println(result)
 
         if (result.size % 2 != 0)
-            result.add(number)
+            result.add("$number")
 
-        val n = result.map { it.toString() }.toMutableList()
-        if (n.size > 1) {
-            for (i in 1 until n.size - 1 step 2) {
-                val f = n[i]
-                if (n[i] == n[i + 1])
-                    n[i] = "0$f"
-            }
-        }
-
-        return n
+        return result
     }
 
     val result = getArrayNumber()
@@ -640,6 +644,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     fun start() {
         val k = result[0]
         val kLength = k.length
+        val answer = lhv / rhv
 
         with(outputStream) {
             if (k == "0" && kLength != lhvLength) {
