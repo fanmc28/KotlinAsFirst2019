@@ -631,8 +631,6 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             }
         }
 
-        println(result)
-
         if (result.size % 2 != 0)
             result.add("$number")
 
