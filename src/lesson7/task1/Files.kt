@@ -611,8 +611,11 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         } else {
             if (z % rhv == 0) {
                 result.add(z)
-                if (i != lhvToString.length - 1)
-                    result.add(z)
+                if (i != lhvToString.length - 1) {
+                    val b = lhvToString[i + 1]
+                    val c = "$b".toInt()
+                    result.add(c)
+                }
             } else {
                 val k = z - z % rhv
                 result.add(k)
@@ -624,12 +627,13 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
 
     val n = result.map { it.toString() }.toMutableList()
     if (n.size > 1) {
-        for (i in 1 until n.size - 1) {
+        for (i in 1 until n.size - 1 step 2) {
             val f = n[i]
-            if (n[i] == n[i - 1])
+            if (n[i] == n[i + 1])
                 n[i] = "0$f"
         }
     }
+    println(n)
 
     val k = n[0]
     val kLen = k.length
