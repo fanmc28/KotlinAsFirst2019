@@ -2,7 +2,6 @@
 
 package lesson7.task1
 
-import kotlinx.html.I
 import ru.spbstu.wheels.toMap
 import java.io.File
 
@@ -582,118 +581,130 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
-    val result = mutableListOf<Int>()
     val lhvToString = lhv.toString()
     val answer = lhv / rhv
+    val lhvLength = lhvToString.length
 
-    with(outputStream) {
-        write(" $lhv | $rhv")
-        newLine()
-    }
+    fun arrayOfNumbers(): List<String> {
+        var number = 0
+        val result = mutableListOf<Int>()
+        for (i in 0 until lhvLength) {
+            val numeral = "${lhvToString[i]}".toInt()
+            number = number * 10 + numeral
+            val subtraction = number - number % rhv
 
-    var y = 0
-    for (i in 0 until lhvToString.length) {
-        val z = "${lhvToString[i]}".toInt()
-        if (z / rhv == 0) {
-            y = y * 10 + z
-            if (y / rhv != 0) {
-                if (result.isNotEmpty())
-                    result.add(y)
-                val k = y - y % rhv
-                result.add(k)
-                y -= k
+            if (number / rhv != 0) {
+                if (number % rhv == 0) {
+                    result.add(number)
+                    if (i != lhvLength - 1) {
+                        result.add("${lhvToString[i + 1]}".toInt())
+                    }
+                    number = 0
+                } else {
+                    if (result.isNotEmpty())
+                        result.add(number)
+                    result.add(subtraction)
+                    number -= subtraction
+                }
             } else {
                 if (result.isNotEmpty()) {
-                    result.add(y)
+                    result.add(number)
                     result.add(0)
                 }
             }
+        }
+
+        if (result.isEmpty())
+            result.add(0)
+
+        if (result.size % 2 != 0)
+            result.add(number)
+
+        val n = result.map { it.toString() }.toMutableList()
+        if (n.size > 1) {
+            for (i in 1 until n.size - 1 step 2) {
+                val f = n[i]
+                if (n[i] == n[i + 1])
+                    n[i] = "0$f"
+            }
+        }
+
+        return n
+    }
+
+    val result = arrayOfNumbers()
+
+    fun start() {
+        val k = result[0]
+        val kLength = k.length
+
+        if (k == "0" && kLength != lhvLength) {
+            with(outputStream) {
+                write("$lhv | $rhv")
+                newLine()
+                write(" ".repeat(lhvLength - 2) + "-0" + " ".repeat(3) + "$answer")
+                newLine()
+                write("-".repeat(kLength + 1))
+                newLine()
+            }
         } else {
-            if (z % rhv == 0) {
-                result.add(z)
-                if (i != lhvToString.length - 1) {
-                    result.add("${lhvToString[i + 1]}".toInt())
-                }
-            } else {
-                val k = z - z % rhv
-                result.add(k)
-                result.add(z - k)
+            with(outputStream) {
+                write(" $lhv | $rhv")
+                newLine()
+                write("-$k" + " ".repeat(lhvLength - kLength + 3) + "$answer")
+                newLine()
+                write("-".repeat(kLength + 1))
+                newLine()
             }
         }
     }
-    if (result.size % 2 != 0)
-        result.add(y)
 
-    if (result.isEmpty()) {
-        result.add(0)
-        result.add(y)
-    }
+    start()
 
-    val n = result.map { it.toString() }.toMutableList()
-    if (n.size > 1) {
-        for (i in 1 until n.size - 1 step 2) {
-            val f = n[i]
-            if (n[i] == n[i + 1])
-                n[i] = "0$f"
+    fun theMiddle() {
+
+        fun output(range: Int, rangeTwo: Int, now: String, next: String) {
+            with(outputStream) {
+                write(" ".repeat(range) + now)
+                newLine()
+                write(" ".repeat(rangeTwo) + "-" + next)
+                newLine()
+                write(" ".repeat(rangeTwo) + "-".repeat(next.length + 1))
+                newLine()
+            }
         }
-    }
-    println(n)
 
-    val k = n[0]
-    val kLen = k.length
-    if (answer != 0) {
-        with(outputStream) {
-            write("-$k" + " ".repeat(lhvToString.length - kLen + 3) + "$answer")
-            newLine()
-            write("-".repeat(kLen + 1))
-            newLine()
-        }
-    } else {
-        if (lhvToString.length != 1) with(outputStream) {
-            write(" ".repeat(lhvToString.length - kLen - 1) + "-" + "0" + " ".repeat(3) + "0")
-            newLine()
-            write("-".repeat(kLen))
-            newLine()
-        } else with(outputStream) {
-            write("-0" + " ".repeat(3) + "0")
-            newLine()
-            write("-".repeat(2))
-            newLine()
+        var range = 1
+        for (i in 1..result.size - 2 step 2) {
+            val last = result[i - 1]
+            val now = result[i]
+            val next = result[i + 1]
+            var rangeTwo = lhvLength - now.length
+            if (now[0] == '0')
+                rangeTwo = range
+            if (last.toInt() != 0) {
+                range += last.length - 1
+                output(range, rangeTwo, now, next)
+                range += if (now[0] != '0')
+                    now.length - (now.toInt() - next.toInt()).toString().length
+                else 1
+            } else {
+                output(range, rangeTwo, now, next)
+            }
         }
     }
 
-    fun output(range: Int, rangeTwo: Int, now: String, next: String) {
-        with(outputStream) {
-            write(" ".repeat(range) + now)
-            newLine()
-            write(" ".repeat(rangeTwo) + "-" + next)
-            newLine()
-            write(" ".repeat(rangeTwo) + "-".repeat(next.length + 1))
-            newLine()
-        }
+    theMiddle()
+
+    fun end() {
+        val m = result.last()
+        val first = result[0]
+        if (first != "0" && (lhvLength == first.length || result.size > 2) || first == "0" && result.size == 2 && lhvLength == first.length)
+            outputStream.write(" ".repeat(lhvLength - m.length) + " $m")
+        else outputStream.write(" ".repeat(lhvLength - m.length) + m)
     }
 
-    var range = 1
-    for (i in 1..n.size - 2 step 2) {
-        val last = n[i - 1]
-        val now = n[i]
-        val next = n[i + 1]
-        var rangeTwo = lhvToString.length - now.length
-        if (now[0] == '0')
-            rangeTwo = range
-        if (last.toInt() != 0) {
-            range += last.length - 1
-            output(range, rangeTwo, now, next)
-            range += if (now[0] != '0')
-                now.length - (now.toInt() - next.toInt()).toString().length
-            else 1
-        } else {
-            output(range, rangeTwo, now, next)
-        }
-    }
-
-    val m = n.last()
-    outputStream.write(" ".repeat(lhvToString.length - m.length) + " $m")
+    end()
 
     outputStream.close()
 }
