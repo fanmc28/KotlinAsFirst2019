@@ -585,7 +585,7 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val answer = lhv / rhv
     val lhvLength = lhvToString.length
 
-    fun arrayOfNumbers(): List<String> {
+    fun getArrayNumber(): List<String> {
         var number = 0
         val result = mutableListOf<Int>()
         for (i in 0 until lhvLength) {
@@ -609,7 +609,10 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             } else {
                 if (result.isNotEmpty()) {
                     result.add(number)
-                    result.add(0)
+                    if (number != 0)
+                        result.add(0)
+                    else if (i != lhvLength - 1)
+                        result.add("${lhvToString[i + 1]}".toInt())
                 }
             }
         }
@@ -632,23 +635,21 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         return n
     }
 
-    val result = arrayOfNumbers()
+    val result = getArrayNumber()
 
     fun start() {
         val k = result[0]
         val kLength = k.length
 
-        if (k == "0" && kLength != lhvLength) {
-            with(outputStream) {
+        with(outputStream) {
+            if (k == "0" && kLength != lhvLength) {
                 write("$lhv | $rhv")
                 newLine()
                 write(" ".repeat(lhvLength - 2) + "-0" + " ".repeat(3) + "$answer")
                 newLine()
                 write("-".repeat(kLength + 1))
                 newLine()
-            }
-        } else {
-            with(outputStream) {
+            } else {
                 write(" $lhv | $rhv")
                 newLine()
                 write("-$k" + " ".repeat(lhvLength - kLength + 3) + "$answer")
