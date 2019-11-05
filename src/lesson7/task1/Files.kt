@@ -583,127 +583,141 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
     val lhvToString = lhv.toString()
     val lhvLength = lhvToString.length
+    val answer = lhv / rhv
 
-    fun getArrayNumber(): List<String> {
-        var number = 0
-        val result = mutableListOf<String>()
-        for (i in 0 until lhvLength) {
-            val numeral = "${lhvToString[i]}".toInt()
-            number = number * 10 + numeral
-            val subtraction = number - number % rhv
 
-            if (0 == number) {
-                result.add("0")
-                if (i == lhvLength - 1) {
-                    result.add("0")
-                } else {
-                    result.add("0${lhvToString[i + 1]}")
-                }
+    fun numberInt(lhv: Int, rhv: Int, lhvToString: String): MutableList<Int> {
+        val balance = lhv % rhv
+        val res = listOf<Int>().toMutableList()
+
+        if (answer / 10 == 0) {
+            if (balance == lhv) {
+                res.add(0)
+                res.add(lhv)
             } else {
-                if (number / rhv != 0) {
-                    if (number % rhv == 0) {
-                        result.add("$number")
-                        if (result.size % 2 == 0) {
-                            result.add("$number")
+                res.add(answer * rhv)
+                res.add(balance)
+            }
+        } else {
+            var y = 0
+            for (i in 0 until lhvLength) {
+                y = y * 10 + lhvToString[i].toString().toInt()
+                when {
+                    y == 0 -> {
+                        res.add(0)
+                        res.add(0)
+                    }
+                    y / rhv != 0 && y % rhv == 0 -> {
+                        res.add(y)
+                        if (res.size != 1)
+                            res.add(y)
+                        y = 0
+                    }
+                    y / rhv != 0 && y % rhv != 0 -> {
+                        if (res.size != 0)
+                            res.add(y)
+                        res.add(y - (y % rhv))
+                        y %= rhv
+
+                    }
+                    else -> {
+                        if (y / rhv == 0 && res.size != 0) {
+                            res.add(y)
+                            res.add(0)
                         }
-                        if (i != lhvLength - 1)
-                            result.add("0${lhvToString[i + 1]}")
-                        else result.add("0")
-                        number = 0
-                    } else {
-                        if (result.isNotEmpty()) {
-                            if (result.size % 2 == 0) {
-                                result.add("$subtraction")
-                                if (i != lhvLength - 1)
-                                    result.add("${number - subtraction}${lhvToString[i + 1]}")
-                                else result.add("${number - subtraction}")
-                            } else {
-                                result.add("$number")
-                                result.add("$subtraction")
-                            }
-                        } else result.add("$subtraction")
-                        number -= subtraction
                     }
-                } else {
-                    if (i == lhvLength - 1) {
-                        result.add("0")
-                        result.add("$number")
-                    } else if (result.isNotEmpty()) {
-                        result.add("$number")
-                        result.add("0")
-                    }
+
                 }
             }
+            res.add(balance)
         }
-
-        if (result.size % 2 != 0)
-            result.add("$number")
-
-        return result
+        return res
     }
 
-    fun start(result: List<String>) {
-        val k = result[0]
-        val kLength = k.length
-        val answer = lhv / rhv
+    fun numberString(lhv: Int, rhv: Int, lhvToString: String): MutableList<String> {
 
+        val listOfInt = numberInt(lhv, rhv, lhvToString)
+
+        val first = listOfInt[0]
+        val last = lhv % rhv
+        val lengthOfFirs = first.toString().length
+        val firstOfLhv = if (lhvToString.take(lengthOfFirs).toInt() - first < 0 || first == 0)
+            lhvToString.take(lengthOfFirs + 1).toInt()
+        else lhvToString.take(lengthOfFirs).toInt()
+
+
+        val res = listOf<String>().toMutableList()
+        res.add("$firstOfLhv")
+        res.add("-$first")
+        res.add("-".repeat(maxOf(res[0].length, res[1].length)))
+
+        var early = if (first == firstOfLhv)
+            1
+        else 0
+
+        var step = 3
+        for (i in 1 until listOfInt.size - 1 step 2) {
+            val now = listOfInt[i]
+            val next = listOfInt[i + 1]
+            early = if (now / 10 == 0 && early == 1)
+                1
+            else 0
+            if (early == 0)
+                res.add("$now")
+            else res.add("0$now")
+            res.add("-$next")
+            early = if (now == next)
+                1
+            else 0
+            res.add("-".repeat(maxOf(res[step].length, res[step + 1].length)))
+            step += 3
+        }
+        res.add("$last")
+
+        return res
+    }
+
+    fun finalLines(): MutableList<String> {
+        val listOfString = numberString(lhv, rhv, lhvToString)
+        var range = if (listOfString[0].length >= listOfString[1].length)
+            0
+        else 1
+        var rangeTwo = 0
+        val resList = mutableListOf<String>()
+
+        resList.add(" ".repeat(range) + lhvToString + " | $rhv")
+        resList.add(listOfString[1] + " ".repeat(lhvLength - listOfString[1].length + range + 3) + "$answer")
+        resList.add(listOfString[2])
+
+        for (i in 3 until listOfString.size - 2 step 3) {
+            val now = listOfString[i]
+            val next = listOfString[i + 1]
+            rangeTwo += listOfString[i - 1].length - (now.length - 1)
+            range = rangeTwo + now.length - next.length
+            resList.add(" ".repeat(rangeTwo) + now)
+            resList.add(" ".repeat(range) + next)
+            rangeTwo = minOf(range, rangeTwo)
+            resList.add(" ".repeat(rangeTwo) + listOfString[i + 2])
+        }
+
+        resList.add(
+            " ".repeat(
+                minOf(
+                    range,
+                    rangeTwo
+                ) + listOfString[listOfString.size - 2].length - listOfString[listOfString.size - 1].length
+            ) + listOfString[listOfString.size - 1]
+        )
+        return resList
+    }
+
+    val resList = finalLines()
+    for (i in 0 until resList.size) {
         with(outputStream) {
-            if (k == "0" && kLength != lhvLength) {
-                write("$lhv | $rhv")
-                newLine()
-                write(" ".repeat(lhvLength - 2) + "-0" + " ".repeat(3) + "$answer")
-                newLine()
-                write("-".repeat(kLength + 1))
-                newLine()
-            } else {
-                write(" $lhv | $rhv")
-                newLine()
-                write("-$k" + " ".repeat(lhvLength - kLength + 3) + "$answer")
-                newLine()
-                write("-".repeat(kLength + 1))
-                newLine()
-            }
+            write(resList[i])
+            newLine()
         }
     }
-
-    fun theMiddle(result: List<String>) {
-
-        fun output(range: Int, rangeTwo: Int, now: String, next: String) {
-            with(outputStream) {
-                write(" ".repeat(range) + now)
-                newLine()
-                write(" ".repeat(rangeTwo) + "-" + next)
-                newLine()
-                write(" ".repeat(rangeTwo) + "-".repeat(next.length + 1))
-                newLine()
-            }
-        }
-
-        var range = result[0].length
-        for (i in 1..result.size - 2 step 2) {
-            val now = result[i]
-            val next = result[i + 1]
-            val rangeTwo = range - 1 + (now.length - next.length)
-
-            output(range, rangeTwo, now, next)
-            if (next != "0" || now == "00") {
-                range = rangeTwo + next.length
-            } else range += rangeTwo - now.length - 1
-        }
-    }
-
-    fun end(result: List<String>) {
-        val m = result.last()
-        val first = result[0]
-        if (first != "0" && (lhvLength == first.length || result.size > 2) || first == "0" && result.size == 2 && lhvLength == first.length)
-            outputStream.write(" ".repeat(lhvLength - m.length) + " $m")
-        else outputStream.write(" ".repeat(lhvLength - m.length) + m)
-    }
-
-    val result = getArrayNumber()
-    start(result)
-    theMiddle(result)
-    end(result)
 
     outputStream.close()
 }
