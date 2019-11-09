@@ -75,11 +75,14 @@ class Tests {
     @Test
     @Tag("Normal")
     fun flattenPhoneNumber() {
+        assertEquals("", flattenPhoneNumber(""))
+        assertEquals("", flattenPhoneNumber("()"))
         assertEquals("79211234567", flattenPhoneNumber("7 921 123-45-67"))
         assertEquals("79211234567", flattenPhoneNumber("7 (9)21 123-45-67"))
         assertEquals("", flattenPhoneNumber("7 ()921 123-45-67"))
         assertEquals("", flattenPhoneNumber("()"))
         assertEquals("1", flattenPhoneNumber("(1)"))
+        assertEquals("+1", flattenPhoneNumber("+(1)"))
         assertEquals("", flattenPhoneNumber("ab-123"))
         assertEquals("", flattenPhoneNumber("@-1*3"))
         assertEquals("123456798", flattenPhoneNumber("12 --  34- 5 -- 67 -98"))
@@ -92,6 +95,7 @@ class Tests {
         assertEquals("", flattenPhoneNumber("+12 () 4-5"))
         assertEquals("+425667", flattenPhoneNumber("+42 56 -- 67"))
         assertEquals("+42566789", flattenPhoneNumber("+42(56 -- 67)89"))
+        assertEquals("+42566789", flattenPhoneNumber("+42(++5  6 -- 6   +++7)89"))
         assertEquals("", flattenPhoneNumber("134_+874"))
     }
 
@@ -108,6 +112,8 @@ class Tests {
     @Test
     @Tag("Hard")
     fun bestHighJump() {
+        assertEquals(-1, bestHighJump("220 -- 224 %"))
+        assertEquals(224, bestHighJump("220 + 224 %+"))
         assertEquals(226, bestHighJump("226 +"))
         assertEquals(230, bestHighJump("220 + 224 %+ 228 %- 230 + 232 %%- 234 %"))
         assertEquals(226, bestHighJump("226 + 225 ++"))
@@ -160,6 +166,10 @@ class Tests {
     fun fromRoman() {
         assertEquals(1978, fromRoman("MCMLXXVIII"))
         assertEquals(1, fromRoman("I"))
+        assertEquals(0, fromRoman(""))
+        assertEquals(1978, fromRoman("MCMLXXVIII"))
+        assertEquals(1, fromRoman("I"))
+        assertEquals(-1, fromRoman("IM"))
         assertEquals(3000, fromRoman("MMM"))
         assertEquals(1978, fromRoman("MCMLXXVIII"))
         assertEquals(694, fromRoman("DCXCIV"))

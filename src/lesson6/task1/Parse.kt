@@ -89,21 +89,36 @@ val months: List<String> = listOf(
     "декабря"
 )
 
+val monthsMap: Map<String, Int> = mapOf(
+    "января" to 1,
+    "февраля" to 2,
+    "марта" to 3,
+    "апреля" to 4,
+    "мая" to 5,
+    "июня" to 6,
+    "июля" to 7,
+    "августа" to 8,
+    "сентября" to 9,
+    "октября" to 10,
+    "ноября" to 11,
+    "декабря" to 12
+)
+
 fun dateStrToDigit(str: String): String {
     val result = str.split(" ")
     if (result.size != 3)
         return ""
 
     val y = str.matches(Regex("""\d+\s[а-я]+\s\d+"""))
-    if (!y || result[1] !in months || daysInMonth(
-            months.indexOf(result[1]),
+    if (!y || result[1] !in monthsMap || daysInMonth(
+            monthsMap.getValue(result[1]),
             result[2].toInt()
         ) < result[0].toInt()
     ) return ""
 
     val day = result[0].toInt()
     val year = result[2]
-    val month = months.indexOf(result[1])
+    val month = monthsMap.getValue(result[1])
 
     return String.format("%02d.%02d.%s", day, month, year)
 }
@@ -152,15 +167,15 @@ fun dateDigitToStr(digital: String): String {
  * PS: Дополнительные примеры работы функции можно посмотреть в соответствующих тестах.
  */
 fun flattenPhoneNumber(phone: String): String {
-    var y = phone.replace(Regex("""[\-\s]"""), "")
+    if (!phone.matches(Regex("""([\s\-+\d]*(\([\s\-+\d]*\d+[\s\-+\d]*\))?[\s\-+\d]*)""")))
+        return ""
+    var y = phone.replace(Regex("""[\-\s()]"""), "")
     if (y.isEmpty())
         return ""
     val prefix = if (y[0] == '+') "+" else ""
     y = y.replace(Regex("""[+]"""), "")
 
-    if (!y.matches(Regex("""\d+|\d*\(\d+\)\d*""")))
-        return ""
-    return String.format("%s%s", prefix, y.replace(Regex("""[()]"""), ""))
+    return String.format("%s%s", prefix, y)
 }
 
 /**
@@ -174,7 +189,7 @@ fun flattenPhoneNumber(phone: String): String {
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
 fun bestLongJump(jumps: String): Int {
-    if (!jumps.matches(Regex("""(\d+|%|-)|((\d+|%|-)\s)+(\d+|%|-)""")))
+    if (!jumps.matches(Regex("""((\d+|%|-)\s)*(\d+|%|-)""")))
         return -1
     val z = """(\d+)""".toRegex().findAll(jumps)
     val result = z.map { it.value.toInt() }.max()
@@ -193,9 +208,10 @@ fun bestLongJump(jumps: String): Int {
  * вернуть -1.
  */
 fun bestHighJump(jumps: String): Int {
-    if (!jumps.matches(Regex("""(\d+\s)([%+\-])+|((\d+\s)([%+\-])+\s)+(\d+\s)([%+\-])+""")))
+    if (!jumps.matches(Regex("""((\d+\s)([%+\-])+\s)*(\d+\s)([%+\-])+""")))
         return -1
-    val z = """(\d+\s\+)""".toRegex().findAll(jumps)
+    val newJumps = jumps.replace(Regex("""[\-%]"""), "")
+    val z = """(\d+\s\+)""".toRegex().findAll(newJumps)
     val result = z.map { it.value.filter { i -> (i in '0'..'9') } }.map { it.toInt() }.max()
     return result ?: -1
 }
@@ -210,7 +226,7 @@ fun bestHighJump(jumps: String): Int {
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
 fun plusMinus(expression: String): Int {
-    if (!expression.matches(Regex("""\d+|((\d+\s)([+\-])\s)+\d+""")))
+    if (!expression.matches(Regex("""((\d+\s)([+\-])\s)*\d+""")))
         throw IllegalArgumentException(expression)
     val x = expression.split(" ").toList()
     var result = x[0].toInt()
@@ -232,7 +248,7 @@ fun plusMinus(expression: String): Int {
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
 fun firstDuplicateIndex(str: String): Int {
-    val x = str.split(" ").map { it.map { i -> i.toLowerCase() }.joinToString(separator = "") }.toList()
+    val x = str.split(" ").map { it.toLowerCase() }.toList()
     if (x.groupBy { it }.filter { (_, v) -> v.size >= 2 }.isEmpty())
         return -1
     var result = -1
@@ -256,12 +272,11 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть больше либо равны нуля.
  */
 fun mostExpensive(description: String): String {
-    if (!description.matches(Regex("""(\S+\s(\d+(.\d+)?))|((\S+\s(\d+(.\d+)?));\s)+(\S+\s(\d+(.\d+)?))""")))
+    if (!description.matches(Regex("""((\S+\s(\d+(.\d+)?));\s)*(\S+\s(\d+(.\d+)?))""")))
         return ""
     val x = description.split("; ").map { it.split(" ") }
-    val maxCost = x.map { it.component2().toDouble() }.max()
-    val result = x.filter { it.component2().toDouble() == maxCost }
-    return result[0].component1()
+    val result = x.maxBy { it.component2().toDouble() }
+    return result?.get(0).toString()
 }
 
 /**
@@ -286,22 +301,23 @@ val romanNumber: Map<Char, Int> = mapOf(
 )
 
 fun fromRoman(roman: String): Int {
-    if (!roman.matches(Regex("""[IXCMVLD]+""")))
-        return -1
     if (roman.isEmpty())
         return 0
-    val l = roman.length
+    if (!roman.matches(Regex("""M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})""")))
+        return -1
+    val length = roman.length - 1
     var result = 0
-    for (i in 0 until l - 1) {
-        val value = romanNumber[roman[i]]
-        val next = romanNumber[roman[i + 1]]
-        if (value != null) {
-            result += if (value < next!!)
-                -value
-            else value
+    var last = 0
+    for (i in length downTo 0) {
+        val now = romanNumber[roman[i]]
+        if (now != null) {
+            result = if (now < last)
+                result - now
+            else result + now
+            last = now
         }
     }
-    return result + (romanNumber[roman[l - 1]] ?: error(""))
+    return result
 }
 
 /**

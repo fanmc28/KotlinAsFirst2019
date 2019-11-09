@@ -198,25 +198,26 @@ fun alignFileByWidth(inputName: String, outputName: String) {
     for (line in File(inputName).readLines()) {
         var newLine = line.replace("""\s+""".toRegex(), " ").trim()
         val currentLength = newLine.length
-        val list = listOf<String>().toMutableList()
+        val listOfWords = listOf<String>().toMutableList()
 
         if (currentLength != maxLength) {
 
             for (word in newLine.split(" ")) {
-                list.add(word)
+                listOfWords.add(word)
             }
+            val size = listOfWords.size
 
-            if (list.size < 2)
-                newLine = list[0]
+            if (size < 2)
+                newLine = listOfWords[0]
             else {
                 newLine = ""
-                val numberOfSpaces = (maxLength - currentLength) / (list.size - 1) + 1
-                val exception = (maxLength - currentLength) % (list.size - 1)
-                newLine += list[0]
-                for (i in 1 until list.size) {
+                val numberOfSpaces = (maxLength - currentLength) / (size - 1) + 1
+                val exception = (maxLength - currentLength) % (size - 1)
+                newLine += listOfWords[0]
+                for (i in 1 until size) {
                     newLine += if (i <= exception) {
-                        " ".repeat(numberOfSpaces + 1) + list[i]
-                    } else " ".repeat(numberOfSpaces) + list[i]
+                        " ".repeat(numberOfSpaces + 1) + listOfWords[i]
+                    } else " ".repeat(numberOfSpaces) + listOfWords[i]
                 }
             }
         }

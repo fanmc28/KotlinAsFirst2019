@@ -124,7 +124,7 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean =
  *     -> a changes to mutableMapOf() aka becomes empty
  */
 fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) =
-    b.forEach { (k, v) -> if (k in a && v == a[k]) a -= k }
+    b.forEach { (k, v) -> if (a[k] == v) a -= k }
 
 
 /**
@@ -309,22 +309,20 @@ fun getHandshakesForMan(name: String, friends: Map<String, Set<String>>): Set<St
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     if (list.size < 2 || list.sum() < number)
-        return Pair(-1, -1)
-    else {
-        val newList = list.map { number - it }.toMutableList()
-        val intersections = list.intersect(newList).toList()
-        return when {
-            intersections.isEmpty() -> Pair(-1, -1)
-            intersections.size > 1 -> Pair(
-                list.indexOf(intersections[0]),
-                list.indexOf(number - intersections[0])
-            )
-            newList.singleOrNull { it * 2 == number } != null -> Pair(-1, -1)
-            else -> {
-                val index = newList.indexOf(intersections[0])
-                newList[index] += 1
-                Pair(index, newList.indexOf(intersections[0]))
-            }
+        return -1 to -1
+
+    val newList = list.map { number - it }
+    val intersections = list.intersect(newList).toList()
+    return when {
+        intersections.isEmpty() -> -1 to -1
+        intersections.size > 1 ->
+            list.indexOf(intersections[0]) to
+                    list.indexOf(number - intersections[0])
+        newList.singleOrNull { it * 2 == number } != null -> -1 to -1
+        else -> {
+            newList.indexOfFirst { it == intersections[0] }
+            val allIndex = newList.withIndex().filter { (_, value) -> value == intersections[0] }
+            allIndex[0].index to allIndex[1].index
         }
     }
 }
