@@ -682,7 +682,9 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         val first = listOfInt[0]
         val last = lhv % rhv
         val lengthOfFirs = first.toString().length
-        val firstOfLhv = if (lhvToString.take(lengthOfFirs).toInt() - first < 0 || first == 0)
+        val firstOfLhv = if (answer == 0) {
+            lhv
+        } else if (lhvToString.take(lengthOfFirs).toInt() - first < 0 || first == 0)
             lhvToString.take(lengthOfFirs + 1).toInt()
         else lhvToString.take(lengthOfFirs).toInt()
 
@@ -727,7 +729,9 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
         val resList = mutableListOf<String>()
 
         resList.add(" ".repeat(range) + lhvToString + " | $rhv")
-        resList.add(listOfString[1] + " ".repeat(lhvLength - listOfString[1].length + range + 3) + "$answer")
+        if (answer != 0)
+            resList.add(listOfString[1] + " ".repeat(lhvLength - listOfString[1].length + range + 3) + "$answer")
+        else resList.add(" ".repeat(lhvLength - listOfString[1].length + range) + listOfString[1] + " ".repeat(3) + "$answer")
         resList.add(listOfString[2])
 
         for (i in 3 until listOfString.size - 2 step 3) {
