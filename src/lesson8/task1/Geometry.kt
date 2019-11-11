@@ -195,7 +195,9 @@ class Line private constructor(val b: Double, val angle: Double) {
  */
 fun lineBySegment(s: Segment): Line {
     var angle = atan((s.begin.y - s.end.y) / (s.begin.x - s.end.x))
-    if (angle < 0.0)
+    if (abs(angle) <= 1e-5)
+        angle = 0.0
+    else if (angle < 0.0)
         angle += PI
     return Line(s.begin, angle)
 }
@@ -216,8 +218,8 @@ fun bisectorByPoints(a: Point, b: Point): Line {
     val midPoint = Point(((a.x + b.x) / 2), ((a.y + b.y) / 2))
     val slope = (a.x - b.x) / (b.y - a.y)
     val angle = when {
-        b.y - a.y == 0.0 -> PI / 2
-        b.x - a.x == 0.0 -> 0.0
+        abs(b.y - a.y) <= 1e-5 -> PI / 2
+        abs(b.x - a.x) <= 1e-5 -> 0.0
         else -> {
             val x = atan(slope)
             if (x < 0.0)
@@ -304,8 +306,9 @@ fun minContainingCircle(vararg points: Point): Circle {
     val max = diameter(*points)
     val first = max.begin
     val second = max.end
+    val third2 = Point(((first.x + second.x) / 2), ((first.y + second.y) / 2))
     if (points.size == 2)
-        return circleByThreePoints(first, second, Point(((first.x + second.x) / 2), ((first.y + second.y) / 2)))
+        return circleByThreePoints(first, second, third2)
 
     var maxLength = 0.0
     var third: Point? = null
@@ -317,7 +320,17 @@ fun minContainingCircle(vararg points: Point): Circle {
             third = z[i]
         }
     }
-    return circleByThreePoints(first, second, third!!)
+
+    val r2 = first.distance(second) / 2
+    val result2 = Circle(third2, r2)
+    val result1 = circleByThreePoints(first, second, third!!)
+    val r1 = result1.radius
+
+    val test = points.all { result2.contains(it) }
+    return if (test && r2 < r1)
+        result2
+    else result1
+
 }
 
 

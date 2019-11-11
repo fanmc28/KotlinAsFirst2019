@@ -75,6 +75,7 @@ class Tests {
     @Test
     @Tag("Normal")
     fun flattenPhoneNumber() {
+        assertEquals("", flattenPhoneNumber("+"))
         assertEquals("", flattenPhoneNumber(""))
         assertEquals("", flattenPhoneNumber("()"))
         assertEquals("79211234567", flattenPhoneNumber("7 921 123-45-67"))

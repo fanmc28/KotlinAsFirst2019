@@ -172,7 +172,7 @@ fun flattenPhoneNumber(phone: String): String {
     var y = phone.replace(Regex("""[\-\s()]"""), "")
     if (y.isEmpty())
         return ""
-    val prefix = if (y[0] == '+') "+" else ""
+    val prefix = if (y[0] == '+' && y.replace(Regex("""[+]"""), "").isNotEmpty()) "+" else ""
     y = y.replace(Regex("""[+]"""), "")
 
     return String.format("%s%s", prefix, y)
