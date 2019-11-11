@@ -195,7 +195,7 @@ class Line private constructor(val b: Double, val angle: Double) {
  */
 fun lineBySegment(s: Segment): Line {
     val angle = atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x))
-    return Line(Point(s.begin.x, s.begin.y), angle)
+    return Line(Point(s.begin.x, s.begin.y), abs(angle))
 }
 
 /**
@@ -212,11 +212,16 @@ fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
  */
 fun bisectorByPoints(a: Point, b: Point): Line {
     val midPoint = Point(((a.x + b.x) / 2), ((a.y + b.y) / 2))
-    val slope = -((b.y - a.y) / (b.x - a.x)).pow(-1)
+    val slope = (a.x - b.x) / (b.y - a.y)
     val angle = when {
         b.y - a.y == 0.0 -> PI / 2
         b.x - a.x == 0.0 -> 0.0
-        else -> atan(slope)
+        else -> {
+            val x = atan(slope)
+            if (x < 0.0)
+                PI + x
+            else x
+        }
     }
     return Line(midPoint, angle)
 }
@@ -265,7 +270,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
 
     val t = (cx2 + cy2 - ax2 - ay2) * (b.x - a.x)
     val del = t - ((c.x - a.x) * (bx2 + by2 - ax2 - ay2))
-    val dt = 2 * (a.y * (c.x + 2 * a.x - b.x) + b.y * (a.x - c.x) + c.y * (b.x - a.x))
+    val dt = 2 * (a.y * (c.x - b.x) + b.y * (a.x - c.x) + c.y * (b.x - a.x))
 
     val y0 = del / dt
 
@@ -288,5 +293,30 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle = TODO()
+fun minContainingCircle(vararg points: Point): Circle {
+    if (points.isEmpty())
+        throw IllegalArgumentException()
+
+    if (points.size == 1)
+        return Circle(points[0], 0.0)
+
+    val max = diameter(*points)
+    val first = max.begin
+    val second = max.end
+    if (points.size == 2)
+        return circleByThreePoints(first, second, Point(((first.x + second.x) / 2), ((first.y + second.y) / 2)))
+
+    var maxLength = 0.0
+    var third: Point? = null
+    val z = points.filter { it != first && it != second }
+    for (i in 0 until z.size) {
+        val length = z[i].distance(first) + z[i].distance(second)
+        if (length > maxLength) {
+            maxLength = length
+            third = z[i]
+        }
+    }
+    return circleByThreePoints(first, second, third!!)
+}
+
 
