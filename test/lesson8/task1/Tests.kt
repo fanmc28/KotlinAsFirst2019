@@ -186,6 +186,10 @@ class Tests {
     @Tag("Normal")
     fun lineByPoint() {
         assertApproxEquals(
+            Line(Point(0.2450293161547954, -2.220446049250313e-16), 2.711065600403593),
+            lineByPoints(Point(0.2450293161547954, -2.220446049250313e-16), Point(0.0, 0.11253194021372503))
+        )
+        assertApproxEquals(
             Line(Point(0.0, 0.0), 1.5707963267948966),
             lineByPoints(Point(0.0, 0.0), Point(0.0, -632.0))
         )

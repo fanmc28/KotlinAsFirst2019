@@ -194,8 +194,10 @@ class Line private constructor(val b: Double, val angle: Double) {
  * Построить прямую по отрезку
  */
 fun lineBySegment(s: Segment): Line {
-    val angle = atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x))
-    return Line(Point(s.begin.x, s.begin.y), abs(angle))
+    var angle = atan((s.begin.y - s.end.y) / (s.begin.x - s.end.x))
+    if (angle < 0.0)
+        angle += PI
+    return Line(s.begin, angle)
 }
 
 /**
@@ -261,25 +263,24 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
-    val cx2 = c.x * c.x
-    val cy2 = c.y * c.y
-    val bx2 = b.x * b.x
-    val by2 = b.y * b.y
-    val ax2 = a.x * a.x
-    val ay2 = a.y * a.y
 
-    val t = (cx2 + cy2 - ax2 - ay2) * (b.x - a.x)
-    val del = t - ((c.x - a.x) * (bx2 + by2 - ax2 - ay2))
-    val dt = 2 * (a.y * (c.x - b.x) + b.y * (a.x - c.x) + c.y * (b.x - a.x))
+    val x12 = a.x - b.x
+    val x23 = b.x - c.x
+    val x31 = c.x - a.x
+    val y12 = a.y - b.y
+    val y23 = b.y - c.y
+    val y31 = c.y - a.y
+    val z1 = a.x * a.x + a.y * a.y
+    val z2 = b.x * b.x + b.y * b.y
+    val z3 = c.x * c.x + c.y * c.y
 
-    val y0 = del / dt
+    val x01 = -(y12 * z3 + y23 * z1 + y31 * z2) / (2 * (x12 * y31 - y12 * x31))
+    val y01 = (x12 * z3 + x23 * z1 + x31 * z2) / (2 * (x12 * y31 - y12 * x31))
 
-    val del1 = 2 * y0 * (a.y - b.y) + bx2 + by2 - ax2 - ay2
-    val dt1 = 2 * (b.x - a.x)
-    val x0 = del1 / dt1
+    val radius1 = sqrt((a.x - x01) * (a.x - x01) + (a.y - y01) * (a.y - y01))
 
-    val radius = sqrt((a.x - x0) * (a.x - x0) + (a.y - y0) * (a.y - y0))
-    return Circle(Point(x0, y0), radius)
+    return Circle(Point(x01, y01), radius1)
+
 }
 
 /**
