@@ -306,28 +306,17 @@ fun minContainingCircle(vararg points: Point): Circle {
     val max = diameter(*points)
     val first = max.begin
     val second = max.end
-    val third2 = Point(((first.x + second.x) / 2), ((first.y + second.y) / 2))
     if (points.size == 2)
-        return Circle(third2, third2.distance(first))
+        return circleByDiameter(max)
 
-    var maxLength = 0.0
-    var third: Point? = null
-    val z = points.filter { it != first && it != second }
-    for (i in 0 until z.size) {
-        val length = z[i].distance(first) + z[i].distance(second)
-        if (length > maxLength) {
-            maxLength = length
-            third = z[i]
-        }
-    }
+    val third = points.filter { it != first && it != second }.maxBy { it.distance(first) + it.distance(second) }
 
-    val r2 = first.distance(second) / 2
-    val result2 = Circle(third2, r2)
+    val result2 = circleByDiameter(max)
+    val r2 = result2.radius
     val result1 = circleByThreePoints(first, second, third!!)
-    val r1 = result1.radius
 
-    val test = points.all { result2.contains(it) }
-    return if (test && r2 < r1)
+    val test = points.all { it.distance(result2.center) <= r2 + 1e-5 }
+    return if (test && r2 < result1.radius)
         result2
     else result1
 
