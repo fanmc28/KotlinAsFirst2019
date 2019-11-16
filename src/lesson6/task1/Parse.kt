@@ -110,10 +110,12 @@ fun dateStrToDigit(str: String): String {
         return ""
 
     val y = str.matches(Regex("""\d+\s[а-я]+\s\d+"""))
-    if (!y || result[1] !in monthsMap || daysInMonth(
-            monthsMap.getValue(result[1]),
-            result[2].toInt()
-        ) < result[0].toInt()
+    if (!y || result[1] !in monthsMap || monthsMap[result[1]]?.let {
+            daysInMonth(
+                it,
+                result[2].toInt()
+            )
+        }!! < result[0].toInt()
     ) return ""
 
     val day = result[0].toInt()
@@ -170,9 +172,7 @@ fun flattenPhoneNumber(phone: String): String {
     if (!phone.matches(Regex("""([\s\-+\d]*(\([\s\-+\d]*\d+[\s\-+\d]*\))?[\s\-+\d]*)""")))
         return ""
     var y = phone.replace(Regex("""[\-\s()]"""), "")
-    if (y.isEmpty())
-        return ""
-    val prefix = if (y[0] == '+' && y.replace(Regex("""[+]"""), "").isNotEmpty()) "+" else ""
+    val prefix = if (y.replace(Regex("""[+]"""), "").isNotEmpty() && y[0] == '+') "+" else ""
     y = y.replace(Regex("""[+]"""), "")
 
     return String.format("%s%s", prefix, y)
@@ -275,7 +275,7 @@ fun mostExpensive(description: String): String {
     if (!description.matches(Regex("""((\S+\s(\d+(.\d+)?));\s)*(\S+\s(\d+(.\d+)?))""")))
         return ""
     val x = description.split("; ").map { it.split(" ") }
-    val result = x.maxBy { it.component2().toDouble() }
+    val result = x.maxBy { (_, v) -> v.toDouble() }
     return result?.get(0).toString()
 }
 
