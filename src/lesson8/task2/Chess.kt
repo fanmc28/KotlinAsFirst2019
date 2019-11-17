@@ -39,6 +39,8 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
+    if (notation.length < 2)
+        throw IllegalArgumentException()
     val first = notation[0] - 'a' + 1
     val second = notation[1] - '0'
     return if (Square(first, second).inside())
@@ -70,6 +72,8 @@ fun square(notation: String): Square {
  * Ладья может пройти через клетку (3, 3) или через клетку (6, 1) к клетке (6, 3).
  */
 fun rookMoveNumber(start: Square, end: Square): Int {
+    if (!start.inside() || !end.inside())
+        throw IllegalArgumentException()
     return when {
         start == end -> 0
         start.column == end.column || start.row == end.row -> 1
@@ -125,6 +129,9 @@ fun rookTrajectory(start: Square, end: Square): List<Square> {
  * Слон может пройти через клетку (6, 4) к клетке (3, 7).
  */
 fun bishopMoveNumber(start: Square, end: Square): Int {
+    if (!start.inside() || !end.inside())
+        throw IllegalArgumentException()
+
     val colorStart = if (start.column % 2 == start.row % 2)
         1
     else 0
