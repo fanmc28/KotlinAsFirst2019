@@ -11,6 +11,9 @@ class HexTests {
     @Test
     @Tag("Normal")
     fun hexPointDistance() {
+        assertEquals(4, HexPoint(4, 0).distance(HexPoint(2, 4)))
+        assertEquals(3, HexPoint(4, 2).distance(HexPoint(1, 4)))
+        assertEquals(0, HexPoint(6, 1).distance(HexPoint(6, 1)))
         assertEquals(5, HexPoint(6, 1).distance(HexPoint(1, 4)))
         assertEquals(1, HexPoint(3, 3).distance(HexPoint(2, 3)))
         assertEquals(2, HexPoint(3, 3).distance(HexPoint(4, 4)))
@@ -20,6 +23,7 @@ class HexTests {
     @Tag("Normal")
     fun hexagonDistance() {
         assertEquals(2, Hexagon(HexPoint(1, 3), 1).distance(Hexagon(HexPoint(6, 2), 2)))
+        assertEquals(0, Hexagon(HexPoint(-999, -999), 0).distance(Hexagon(HexPoint(-999, -1000), 146)))
     }
 
     @Test
@@ -36,11 +40,14 @@ class HexTests {
         assertTrue(HexSegment(HexPoint(3, 1), HexPoint(3, 6)).isValid())
         assertTrue(HexSegment(HexPoint(1, 5), HexPoint(4, 2)).isValid())
         assertFalse(HexSegment(HexPoint(3, 1), HexPoint(6, 2)).isValid())
+        assertFalse(HexSegment(HexPoint(-558, -999), HexPoint(-558, -999)).isValid())
+        assertFalse(HexSegment(HexPoint(-999, -999), HexPoint(-1000, -1000)).isValid())
     }
 
     @Test
     @Tag("Normal")
     fun hexSegmentDirection() {
+        assertEquals(INCORRECT, HexSegment(HexPoint(-999, -999), HexPoint(-1000, -1000)).direction())
         assertEquals(RIGHT, HexSegment(HexPoint(1, 3), HexPoint(5, 3)).direction())
         assertEquals(UP_RIGHT, HexSegment(HexPoint(3, 1), HexPoint(3, 6)).direction())
         assertEquals(DOWN_RIGHT, HexSegment(HexPoint(1, 5), HexPoint(4, 2)).direction())
@@ -108,12 +115,78 @@ class HexTests {
     fun pathBetweenHexes() {
         assertEquals(
             listOf(
+                HexPoint(y = 4, x = 1),
+                HexPoint(y = 3, x = 2),
+                HexPoint(y = 2, x = 3),
+                HexPoint(y = 2, x = 4),
+                HexPoint(y = 2, x = 5)
+            ), pathBetweenHexes(HexPoint(y = 4, x = 1), HexPoint(y = 2, x = 5))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 4, x = 1),
+                HexPoint(y = 3, x = 2),
+                HexPoint(y = 2, x = 3),
+                HexPoint(y = 1, x = 3),
+                HexPoint(y = 0, x = 3)
+            ), pathBetweenHexes(HexPoint(y = 4, x = 1), HexPoint(y = 0, x = 3))
+        )
+        assertEquals(
+            listOf(
                 HexPoint(y = 2, x = 2),
                 HexPoint(y = 2, x = 3),
                 HexPoint(y = 3, x = 3),
                 HexPoint(y = 4, x = 3),
                 HexPoint(y = 5, x = 3)
             ), pathBetweenHexes(HexPoint(y = 2, x = 2), HexPoint(y = 5, x = 3))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 4, x = 5),
+                HexPoint(y = 3, x = 5),
+                HexPoint(y = 2, x = 5),
+                HexPoint(y = 1, x = 5)
+            ), pathBetweenHexes(HexPoint(y = 4, x = 5), HexPoint(y = 1, x = 5))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 1, x = 5),
+                HexPoint(y = 2, x = 5),
+                HexPoint(y = 3, x = 5),
+                HexPoint(y = 4, x = 5)
+            ), pathBetweenHexes(HexPoint(y = 1, x = 5), HexPoint(y = 4, x = 5))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 2, x = 5),
+                HexPoint(y = 2, x = 4),
+                HexPoint(y = 2, x = 3),
+                HexPoint(y = 2, x = 2)
+            ), pathBetweenHexes(HexPoint(y = 2, x = 5), HexPoint(y = 2, x = 2))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 4, x = 0),
+                HexPoint(y = 3, x = 1),
+                HexPoint(y = 2, x = 2),
+                HexPoint(y = 1, x = 3)
+            ), pathBetweenHexes(HexPoint(y = 4, x = 0), HexPoint(y = 1, x = 3))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 1, x = 3),
+                HexPoint(y = 2, x = 2),
+                HexPoint(y = 3, x = 1),
+                HexPoint(y = 4, x = 0)
+            ), pathBetweenHexes(HexPoint(y = 1, x = 3), HexPoint(y = 4, x = 0))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 2, x = 2),
+                HexPoint(y = 2, x = 3),
+                HexPoint(y = 2, x = 4),
+                HexPoint(y = 2, x = 5)
+            ), pathBetweenHexes(HexPoint(y = 2, x = 2), HexPoint(y = 2, x = 5))
         )
     }
 

@@ -65,7 +65,13 @@ data class Hexagon(val center: HexPoint, val radius: Int) {
      * и другим шестиугольником B с центром в 26 и радиуоом 2 равно 2
      * (расстояние между точками 32 и 24)
      */
-    fun distance(other: Hexagon): Int = this.center.distance(other.center) - (this.radius + other.radius)
+    fun distance(other: Hexagon): Int {
+        val x = this.center.distance(other.center) - (this.radius + other.radius)
+        return when {
+            x > 0 -> x
+            else -> 0
+        }
+    }
 
     /**
      * Тривиальная
@@ -88,7 +94,10 @@ class HexSegment(val begin: HexPoint, val end: HexPoint) {
      * А, например, 13-26 не является "правильным" отрезком.
      */
     fun isValid(): Boolean =
-        this.begin.y == this.end.y || this.begin.x == this.end.x || abs(this.begin.y - this.end.y) == abs(this.begin.x - this.end.x)
+        when {
+            this.begin.y == this.end.y && this.begin.x == this.end.x -> false
+            else -> this.begin.y == this.end.y || this.begin.x == this.end.x || this.begin.y - this.end.y == this.end.x - this.begin.x
+        }
 
     /**
      * Средняя
@@ -194,7 +203,17 @@ enum class Direction {
  * 35, direction = UP_LEFT, distance = 2 --> 53
  * 45, direction = DOWN_LEFT, distance = 4 --> 05
  */
-fun HexPoint.move(direction: Direction, distance: Int): HexPoint = TODO()
+fun HexPoint.move(direction: Direction, distance: Int): HexPoint {
+    return when (direction) {
+        Direction.RIGHT -> HexPoint(x + distance, y)
+        Direction.LEFT -> HexPoint(x - distance, y)
+        Direction.UP_RIGHT -> HexPoint(x, y + distance)
+        Direction.UP_LEFT -> HexPoint(x - distance, y + distance)
+        Direction.DOWN_RIGHT -> HexPoint(x + distance, y - distance)
+        Direction.DOWN_LEFT -> HexPoint(x, y - distance)
+        else -> throw IllegalArgumentException()
+    }
+}
 
 /**
  * Сложная
@@ -214,7 +233,86 @@ fun HexPoint.move(direction: Direction, distance: Int): HexPoint = TODO()
  *       HexPoint(y = 5, x = 3)
  *     )
  */
-fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> = TODO()
+fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
+    if (from.distance(to) < 2)
+        return listOf(from, to)
+
+    val result = mutableListOf<HexPoint>()
+    val length = from.distance(to)
+
+    if (HexSegment(from, to).direction() == Direction.LEFT || HexSegment(from, to).direction() == Direction.RIGHT) {
+        result.add(from)
+        for (i in 1 until length) {
+            if (from.x < to.x)
+                result.add(HexPoint(from.x + i, from.y))
+            else result.add(HexPoint(from.x - i, from.y))
+        }
+        result.add(to)
+
+    } else {
+        var last1 = HexPoint(from.x + from.y - to.y, to.y)
+        var last2 = HexPoint(from.x, to.y)
+        var begin = from
+        var end = to
+
+        val segment = if (last1.distance(begin) + last1.distance(end) < last2.distance(begin) + last2.distance(end))
+            HexSegment(from, last1).direction()
+        else HexSegment(from, last2).direction()
+
+        if (segment == Direction.UP_LEFT || segment == Direction.UP_RIGHT) {
+            result.add(to)
+            begin = to
+            end = from
+            last1 = HexPoint(begin.x + begin.y - end.y, end.y)
+            last2 = HexPoint(begin.x, end.y)
+        } else result.add(from)
+
+        var x = begin.x
+        var y = begin.y
+
+        if (last1.x >= end.x && (segment == Direction.UP_LEFT || segment == Direction.DOWN_RIGHT) ||
+            last2.x <= end.x && (segment == Direction.UP_RIGHT || segment == Direction.DOWN_LEFT)
+        ) {
+            while (x != end.x) {
+                x += 1
+                y -= 1
+                result.add(HexPoint(x, y))
+            }
+            while (y != end.y) {
+                y -= 1
+                result.add(HexPoint(x, y))
+            }
+        } else when (segment) {
+            Direction.UP_LEFT, Direction.DOWN_RIGHT -> {
+                while (y != end.y) {
+                    y -= 1
+                    x += 1
+                    result.add(HexPoint(x, y))
+                }
+                while (x != end.x) {
+                    x += 1
+                    result.add(HexPoint(x, y))
+                }
+
+            }
+            else -> {
+                while (y != last2.y) {
+                    y -= 1
+                    result.add(HexPoint(x, y))
+                }
+                while (x != end.x) {
+                    x -= 1
+                    result.add(HexPoint(x, y))
+                }
+            }
+        }
+
+        if (segment == Direction.UP_LEFT || segment == Direction.UP_RIGHT)
+            result.reverse()
+    }
+
+    return result
+}
 
 /**
  * Очень сложная
