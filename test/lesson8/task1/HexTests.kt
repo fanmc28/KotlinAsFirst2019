@@ -116,6 +116,31 @@ class HexTests {
         assertEquals(
             listOf(
                 HexPoint(y = 4, x = 1),
+                HexPoint(y = 4, x = 2),
+                HexPoint(y = 5, x = 2)
+            ), pathBetweenHexes(HexPoint(y = 4, x = 1), HexPoint(y = 5, x = 2))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 4, x = 1),
+                HexPoint(y = 4, x = 1)
+            ), pathBetweenHexes(HexPoint(y = 4, x = 1), HexPoint(y = 4, x = 1))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 4, x = 1),
+                HexPoint(y = 4, x = 2)
+            ), pathBetweenHexes(HexPoint(y = 4, x = 1), HexPoint(y = 4, x = 2))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 4, x = 1),
+                HexPoint(y = 3, x = 1)
+            ), pathBetweenHexes(HexPoint(y = 4, x = 1), HexPoint(y = 3, x = 1))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 4, x = 1),
                 HexPoint(y = 3, x = 2),
                 HexPoint(y = 2, x = 3),
                 HexPoint(y = 2, x = 4),
