@@ -2,7 +2,12 @@
 
 package lesson8.task2
 
+import lesson8.task1.Line
+import lesson8.task1.Point
+import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.roundToInt
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
@@ -39,7 +44,7 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    if (notation.length < 2)
+    if (notation.length != 2)
         throw IllegalArgumentException()
     val first = notation[0] - 'a' + 1
     val second = notation[1] - '0'
@@ -166,7 +171,26 @@ fun bishopMoveNumber(start: Square, end: Square): Int {
  *          bishopTrajectory(Square(1, 3), Square(6, 8)) = listOf(Square(1, 3), Square(6, 8))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun bishopTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun bishopTrajectory(start: Square, end: Square): List<Square> {
+    val pointFirst = Line(Point(start.column.toDouble(), start.row.toDouble()), PI / 4).crossPoint(
+        Line(Point(end.column.toDouble(), end.row.toDouble()), 3 * PI / 4)
+    )
+    val pointSecond = Line(Point(start.column.toDouble(), start.row.toDouble()), 3 * PI / 4).crossPoint(
+        Line(Point(end.column.toDouble(), end.row.toDouble()), PI / 4)
+    )
+
+    val squareFirst = Square(pointFirst.x.roundToInt(), pointFirst.y.roundToInt())
+    val squareSecond = Square(pointSecond.x.roundToInt(), pointSecond.y.roundToInt())
+
+    return when (bishopMoveNumber(start, end)) {
+        -1 -> listOf()
+        0 -> listOf(start)
+        1 -> listOf(start, end)
+        else -> if (squareFirst.inside())
+            listOf(start, squareFirst, end)
+        else listOf(start, squareSecond, end)
+    }
+}
 
 /**
  * Средняя
@@ -188,7 +212,13 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Пример: kingMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
-fun kingMoveNumber(start: Square, end: Square): Int = TODO()
+fun kingMoveNumber(start: Square, end: Square): Int {
+    if (!start.inside() || !end.inside())
+        throw IllegalArgumentException()
+    return if (start == end)
+        0
+    else max(abs(start.row - end.row), abs(start.column - end.column))
+}
 
 /**
  * Сложная
