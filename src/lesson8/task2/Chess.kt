@@ -4,6 +4,8 @@ package lesson8.task2
 
 import lesson8.task1.Line
 import lesson8.task1.Point
+import java.rmi.UnexpectedException
+import java.util.*
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.max
@@ -259,7 +261,42 @@ fun kingTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int = TODO()
+private val knightMoves = listOf(1 to 2, -1 to 2, 2 to 1, 2 to -1, 1 to -2, -1 to -2, -2 to -1, -2 to 1)
+
+fun knightMovesToEnd(start: Square, end: Square): List<Square> {
+    if (start == end)
+        return listOf(start)
+
+    fun getNext(now: Square, visited: Set<Square>): List<Square> =
+        knightMoves.map { Square(it.first + now.column, it.second + now.row) }
+            .filter { it.inside() && it !in visited }
+
+    val queue = ArrayDeque<Pair<Square, List<Square>>>()
+
+    val visited = mutableSetOf(start)
+    queue.add(start to listOf())
+
+    while (!queue.isEmpty()) {
+        val (square, prev) = queue.poll()
+        val next = getNext(square, visited)
+
+        next.forEach {
+            if (it == end) {
+                return prev + square + end
+            }
+            visited.add(it)
+            queue.add(it to prev + square)
+        }
+    }
+
+    throw UnexpectedException("Сюда мы никогда не попадем, так как конь может достичь любой точки на шахматной доске")
+}
+
+fun knightMoveNumber(start: Square, end: Square): Int {
+    if (!start.inside() || !end.inside())
+        throw IllegalArgumentException()
+    return knightMovesToEnd(start, end).size - 1
+}
 
 /**
  * Очень сложная
@@ -281,4 +318,4 @@ fun knightMoveNumber(start: Square, end: Square): Int = TODO()
  *
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun knightTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun knightTrajectory(start: Square, end: Square): List<Square> = knightMovesToEnd(start, end)
