@@ -25,6 +25,11 @@ interface Matrix<E> {
 
     operator fun get(cell: Cell): E
 
+    fun revertRow(row: Int)
+
+    fun getRow(row: Int): MutableList<E>
+
+    fun getColumn(column: Int): MutableList<E>
     /**
      * Запись в ячейку.
      * Методы могут бросить исключение, если ячейка не существует
@@ -41,32 +46,58 @@ interface Matrix<E> {
  * height = высота, width = ширина, e = чем заполнить элементы.
  * Бросить исключение IllegalArgumentException, если height или width <= 0.
  */
-fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> = TODO()
+fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> =
+    if (height > 0 && width > 0)
+        MatrixImpl(height, width, e)
+    else throw IllegalArgumentException()
 
 /**
  * Средняя сложность
  *
  * Реализация интерфейса "матрица"
  */
-class MatrixImpl<E> : Matrix<E> {
-    override val height: Int = TODO()
+class MatrixImpl<E>(override val height: Int, override val width: Int, value: E) : Matrix<E> {
+    private val list = List(height) { MutableList(width) { value } }
 
-    override val width: Int = TODO()
+    init {
+        for (i in 0 until height)
+            for (j in 0 until width)
+                list[i][j] = value
+    }
 
-    override fun get(row: Int, column: Int): E = TODO()
+    override fun get(row: Int, column: Int): E = list[row][column]
 
-    override fun get(cell: Cell): E = TODO()
+    override fun revertRow(row: Int) {
+        list[row].reverse()
+    }
+
+    override fun getRow(row: Int): MutableList<E> = list[row]
+
+    override fun getColumn(column: Int): MutableList<E> = list.map { it[column] }.toMutableList()
+
+    override fun get(cell: Cell): E = get(cell.row, cell.column)
 
     override fun set(row: Int, column: Int, value: E) {
-        TODO()
+        list[row][column] = value
     }
 
     override fun set(cell: Cell, value: E) {
-        TODO()
+        set(cell.row, cell.column, value)
     }
 
-    override fun equals(other: Any?) = TODO()
+    override fun equals(other: Any?) =
+        other is MatrixImpl<*> &&
+                height == other.height &&
+                width == other.width &&
+                list == other.list
 
-    override fun toString(): String = TODO()
+    override fun toString(): String = list.toString()
+
+    override fun hashCode(): Int {
+        var result = height
+        result = 31 * result + width
+        result = 31 * result + list.hashCode()
+        return result
+    }
 }
 

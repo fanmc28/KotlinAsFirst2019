@@ -3,7 +3,6 @@
 package lesson2.task2
 
 import lesson1.task1.sqr
-import javax.management.Query.and
 import kotlin.math.*
 
 /**
@@ -37,10 +36,7 @@ fun isNumberHappy(number: Int): Boolean {
 fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean {
     val mx: Int = x2 - x1
     val my: Int = y2 - y1
-    return when {
-        x2 == x1 || y2 == y1 || abs(mx) == abs(my) -> true
-        else -> false
-    }
+    return x2 == x1 || y2 == y1 || abs(mx) == abs(my)
 }
 
 
@@ -52,9 +48,9 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean {
  */
 fun daysInMonth(month: Int, year: Int): Int {
     return when {
-        (month <= 7) and (month % 2 == 1) || (month >= 8) and (month % 2 == 0) -> 31
+        month <= 7 && month % 2 == 1 || month >= 8 && month % 2 == 0 -> 31
         month != 2 -> 30
-        (year % 4 == 0) and (year % 100 != 0) || (year % 400 == 0) and (year % 4 == 0) -> 29
+        year % 4 == 0 && year % 100 != 0 || year % 400 == 0 && year % 4 == 0 -> 29
         else -> 28
     }
 }
@@ -81,17 +77,18 @@ fun circleInside(
  * Вернуть true, если кирпич пройдёт
  */
 fun brickPasses(a: Int, b: Int, c: Int, r: Int, s: Int): Boolean {
-val small: Int = min(a, min(b, c))
-    val m1: Int
+    val small: Int = minOf(a, b, c)
+    val m1: Int = medianOf(a, b, c)
     val m2: Int = max(s, r)
-    m1 = when (small) {
-        a -> min(b, c)
-        b -> min(a, c)
-        c -> min(b, a)
-        else -> throw Exception("ошибка")
-    }
-    if (small <= min(s, r))
-        if (m1 <= m2)
-            return true
-    return false
+    val m3: Int = min(s, r)
+    return small <= m3 && m1 <= m2
 }
+
+fun medianOf(a: Int, b: Int, c: Int): Int {
+    return when {
+        b in a..c || b in c..a -> b
+        a in b..c || a in c..b -> a
+        else -> c
+    }
+}
+

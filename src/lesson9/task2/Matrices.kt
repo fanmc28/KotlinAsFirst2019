@@ -76,7 +76,33 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
  *  1  2  2  2  2  1
  *  1  1  1  1  1  1
  */
-fun generateRectangles(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateRectangles(height: Int, width: Int): Matrix<Int> {
+    if (height == 1 || width == 1)
+        return createMatrix(height, width, 1)
+
+    val result: Matrix<Int> = createMatrix(height, width, 0)
+    var element = 1
+    var x = 0
+    var y = 0
+    val limit = minOf(width, height) - 1
+
+    while (element <= limit) {
+
+        for (i in x until width - x) {
+            result[x, i] = element
+            result[height - x - 1, i] = element
+        }
+        for (i in y until height - y) {
+            result[i, y] = element
+            result[i, width - y - 1] = element
+
+        }
+        x += 1
+        y += 1
+        element += 1
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -104,7 +130,17 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> = TODO()
  * 4 5 6      8 5 2
  * 7 8 9      9 6 3
  */
-fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
+fun <E> rotate(matrix: Matrix<E>): Matrix<E> {
+    if (matrix.height != matrix.width)
+        throw IllegalArgumentException()
+
+    val result = transpose(matrix)
+
+    for (i in 0 until result.height)
+        result.revertRow(i)
+
+    return result
+}
 
 /**
  * Сложная
@@ -119,7 +155,18 @@ fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
  * 1 2 3
  * 3 1 2
  */
-fun isLatinSquare(matrix: Matrix<Int>): Boolean = TODO()
+fun isLatinSquare(matrix: Matrix<Int>): Boolean {
+    if (matrix.height != matrix.width)
+        return false
+
+    val sum = (1..matrix.height).sum()
+
+    for (i in 0 until matrix.height) {
+        if (matrix.getRow(i).sum() != sum || matrix.getColumn(i).sum() != sum)
+            return false
+    }
+    return true
+}
 
 /**
  * Средняя

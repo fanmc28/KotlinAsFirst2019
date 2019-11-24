@@ -57,6 +57,7 @@ class Tests {
         assertEquals(1, whichRookThreatens(5, 3, 7, 3, 4, 8))
         assertEquals(2, whichRookThreatens(6, 8, 8, 6, 6, 3))
         assertEquals(3, whichRookThreatens(3, 7, 8, 7, 3, 5))
+        assertEquals(1, whichRookThreatens(1, 2, 1, 1, 2, 3))
     }
 
     @Test
@@ -66,15 +67,19 @@ class Tests {
         assertEquals(1, rookOrBishopThreatens(2, 8, 6, 8, 1, 6))
         assertEquals(2, rookOrBishopThreatens(5, 4, 3, 7, 1, 8))
         assertEquals(3, rookOrBishopThreatens(1, 6, 7, 6, 3, 8))
+        assertEquals(1, rookOrBishopThreatens(8, 1, 8, 2, 1, 1))
     }
 
     @Test
     @Tag("Easy")
     fun triangleKind() {
+        assertEquals(0, triangleKind(7.070541216611483, 7.070541216611483, 0.1))
+        assertEquals(-1, triangleKind(0.1, 0.1, 1.0))
         assertEquals(-1, triangleKind(3.0, 7.5, 4.0))
         assertEquals(1, triangleKind(5.0, 3.0, 4.0))
         assertEquals(2, triangleKind(4.0, 6.0, 8.0))
         assertEquals(0, triangleKind(1.0, 1.5, 1.5))
+
     }
 
     @Test

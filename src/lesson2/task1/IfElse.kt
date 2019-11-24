@@ -4,6 +4,7 @@ package lesson2.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
+import lesson2.task2.medianOf
 import javax.management.Query.and
 import kotlin.math.abs
 import kotlin.math.max
@@ -68,8 +69,8 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
 fun ageDescription(age: Int): String {
-    if ((age % 10 == 1) and (age % 100 != 11)) return "$age год"
-    if ((age % 10 in 2..4) and (age % 100 !in 12..14)) return "$age года"
+    if (age % 10 == 1 && age % 100 != 11) return "$age год"
+    if (age % 10 in 2..4 && age % 100 !in 12..14) return "$age года"
     return "$age лет"
 }
 
@@ -89,13 +90,11 @@ fun timeForHalfWay(
     val s2: Double = v2 * t2
     val s3: Double = v3 * t3
     val s: Double = (s1 + s2 + s3) / 2
-    val t: Double
-    t = when {
+    return when {
         s <= s1 -> s / v1
         s <= s1 + s2 -> t1 + (s - s1) / v2
         else -> t1 + t2 + (s - s1 - s2) / v3
     }
-    return t
 }
 
 /**
@@ -112,10 +111,14 @@ fun whichRookThreatens(
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
 ): Int {
+    val k = kingX == rookX1
+    val k2 = kingY == rookY1
+    val k3 = kingX == rookX2
+    val k4 = kingY == rookY2
     return when {
-        (kingX == rookX1 || kingY == rookY1) and (kingX == rookX2 || kingY == rookY2) -> 3
-        kingX == rookX1 || kingY == rookY1 -> 1
-        kingX == rookX2 || kingY == rookY2 -> 2
+        (k || k2) && (k3 || k4) -> 3
+        k || k2 -> 1
+        k3 || k4 -> 2
         else -> 0
     }
 }
@@ -137,10 +140,13 @@ fun rookOrBishopThreatens(
 ): Int {
     val mx: Int = kingX - bishopX
     val my: Int = kingY - bishopY
+    val k = kingX == rookX
+    val k2 = kingY == rookY
+    val a = abs(mx) == abs(my)
     return when {
-        (kingX == rookX || kingY == rookY) and (abs(mx) == abs(my)) -> 3
-        abs(mx) == abs(my) -> 2
-        kingX == rookX || kingY == rookY -> 1
+        (k || k2) && a -> 3
+        a -> 2
+        k || k2 -> 1
         else -> 0
     }
 }
@@ -154,27 +160,13 @@ fun rookOrBishopThreatens(
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val gipotenyza: Double = (max(a, max(b, c)))
-    val katet: Double
-    val kated: Double
-    when (gipotenyza) {
-        a -> {
-            katet = b
-            kated = c
-        }
-        b -> {
-            katet = a
-            kated = c
-        }
-        else -> {
-            katet = a
-            kated = b
-        }
-    }
+    val g: Double = maxOf(a, b, c)
+    val k1: Double = minOf(a, b, c)
+    val k2: Double = medianOf(a, b, c)
     return when {
-        gipotenyza > (kated + katet) -> -1
-        sqr(gipotenyza) < (sqr(kated) + sqr(katet)) -> 0
-        sqr(gipotenyza) == (sqr(kated) + sqr(katet)) -> 1
+        g > (k2 + k1) -> -1
+        sqr(g) < (sqr(k2) + sqr(k1)) -> 0
+        sqr(g) == (sqr(k2) + sqr(k1)) -> 1
         else -> 2
     }
 }
@@ -189,42 +181,18 @@ fun triangleKind(a: Double, b: Double, c: Double): Int {
  * Если пересечения нет, вернуть -1.
  */
 fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    val m1: Int = max(a, c)
+    val m2: Int = min(b, d)
     return when {
-        (((d > b) and (a > c)) || ((b > d) and (c > a))) -> min((b - a), (d - c))
-        a == b -> {
-            if ((c == d) and (c != a) || c > a || b > d)
-                -1
-            else 0
-        }
-        c == d -> {
-            if ((a == b) and (c != a) || c < a || b < d)
-                -1
-            else 0
-        }
-        (a == c) and (b != d) -> {
-            if ((min(b, d)) == b)
-                b - a
-            else d - c
-        }
-        (b == d) and (a != c) -> {
-            if ((max(a, c)) == c)
-                d - c
-            else b - a
-        }
-        else -> {
-            val maks: Int = max(a, c)
-            if (maks == a) {
-                val m1: Int = max(a, d)
-                if (m1 == d)
-                    d - a
-                else -1
-            } else {
-                val m2: Int = max(b, c)
-                if (m2 == b)
-                    b - c
-                else -1
+        (m2 - m1) >= 0 -> (m2 - m1)
+        else -> -1
+    }
+}
 
-            }
-        }
+fun medianOf(a: Double, b: Double, c: Double): Double {
+    return when {
+        b in a..c || b in c..a -> b
+        a in b..c || a in c..b -> a
+        else -> c
     }
 }

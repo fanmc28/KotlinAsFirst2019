@@ -34,11 +34,23 @@ class Tests {
     @Test
     @Tag("Normal")
     fun dateStrToDigit() {
+        assertEquals("", dateStrToDigit("15 июля 2016 2017"))
+        assertEquals("", dateStrToDigit("3 а 2011"))
+        assertEquals("", dateStrToDigit("3 12 2011"))
+        assertEquals("", dateStrToDigit("3               12 2011"))
+        assertEquals("03.04.2011", dateStrToDigit("3 апреля 2011"))
+        assertEquals("", dateStrToDigit("3 апреляя 2011"))
+        assertEquals("", dateStrToDigit("3b апреля 2011"))
+        assertEquals("", dateDigitToStr("ab.cd.ef"))
+        assertEquals("", dateDigitToStr("ab.12.ef"))
+        assertEquals("", dateDigitToStr("a2.cd.3f"))
+        assertEquals("", dateDigitToStr("12.23.3,23"))
+        assertEquals("", dateDigitToStr("12.23.3!@#$%^&*()23"))
+        assertEquals("", dateDigitToStr("15.13.2016"))
         assertEquals("15.07.2016", dateStrToDigit("15 июля 2016"))
         assertEquals("", dateStrToDigit("3 мартобря 1918"))
         assertEquals("18.11.2018", dateStrToDigit("18 ноября 2018"))
         assertEquals("", dateStrToDigit("23"))
-        assertEquals("03.04.2011", dateStrToDigit("3 апреля 2011"))
         assertEquals("", dateStrToDigit("32 сентября 2011"))
         assertEquals("", dateStrToDigit("29 февраля 1993"))
     }
@@ -46,11 +58,16 @@ class Tests {
     @Test
     @Tag("Normal")
     fun dateDigitToStr() {
+        assertEquals("", dateDigitToStr("ab.cd.ef"))
+        assertEquals("", dateDigitToStr("ab.12.ef"))
+        assertEquals("", dateDigitToStr("a2.cd.3f"))
+        assertEquals("", dateDigitToStr("12.23.3,23"))
+        assertEquals("", dateDigitToStr("12.23.3!@#$%^&*()23"))
+        assertEquals("", dateDigitToStr("15.13.2016"))
         assertEquals("15 июля 2016", dateDigitToStr("15.07.2016"))
         assertEquals("", dateDigitToStr("01.02.20.19"))
         assertEquals("", dateDigitToStr("28.00.2000"))
         assertEquals("3 апреля 2011", dateDigitToStr("03.04.2011"))
-        assertEquals("", dateDigitToStr("ab.cd.ef"))
         assertEquals("", dateDigitToStr("32.09.2011"))
         assertEquals("", dateDigitToStr("29.02.1993"))
     }
@@ -58,13 +75,28 @@ class Tests {
     @Test
     @Tag("Normal")
     fun flattenPhoneNumber() {
-        assertEquals("+79211234567", flattenPhoneNumber("+7 (921) 123-45-67"))
+        assertEquals("", flattenPhoneNumber("+"))
+        assertEquals("", flattenPhoneNumber(""))
+        assertEquals("", flattenPhoneNumber("()"))
+        assertEquals("79211234567", flattenPhoneNumber("7 921 123-45-67"))
+        assertEquals("79211234567", flattenPhoneNumber("7 (9)21 123-45-67"))
+        assertEquals("", flattenPhoneNumber("7 ()921 123-45-67"))
+        assertEquals("", flattenPhoneNumber("()"))
+        assertEquals("1", flattenPhoneNumber("(1)"))
+        assertEquals("+1", flattenPhoneNumber("+(1)"))
+        assertEquals("", flattenPhoneNumber("ab-123"))
+        assertEquals("", flattenPhoneNumber("@-1*3"))
         assertEquals("123456798", flattenPhoneNumber("12 --  34- 5 -- 67 -98"))
+        assertEquals("+79211234567", flattenPhoneNumber("+7 921 123-45-67"))
+        assertEquals("", flattenPhoneNumber("+7 ()921 123-45-67"))
+        assertEquals("+79211234567", flattenPhoneNumber("+7 921 123-45-67"))
+        assertEquals("+79211234567", flattenPhoneNumber("+7 (921) 123-45-67"))
+        assertEquals("+79211234567", flattenPhoneNumber("+7 (9)21 123-45-67"))
         assertEquals("+12345", flattenPhoneNumber("+12 (3) 4-5"))
         assertEquals("", flattenPhoneNumber("+12 () 4-5"))
         assertEquals("+425667", flattenPhoneNumber("+42 56 -- 67"))
         assertEquals("+42566789", flattenPhoneNumber("+42(56 -- 67)89"))
-        assertEquals("", flattenPhoneNumber("ab-123"))
+        assertEquals("+42566789", flattenPhoneNumber("+42(++5  6 -- 6   +++7)89"))
         assertEquals("", flattenPhoneNumber("134_+874"))
     }
 
@@ -81,18 +113,22 @@ class Tests {
     @Test
     @Tag("Hard")
     fun bestHighJump() {
+        assertEquals(-1, bestHighJump("220 -- 224 %"))
+        assertEquals(224, bestHighJump("220 + 224 %+"))
         assertEquals(226, bestHighJump("226 +"))
-        assertEquals(-1, bestHighJump("???"))
         assertEquals(230, bestHighJump("220 + 224 %+ 228 %- 230 + 232 %%- 234 %"))
+        assertEquals(226, bestHighJump("226 + 225 ++"))
+        assertEquals(-1, bestHighJump("???"))
     }
 
     @Test
     @Tag("Hard")
     fun plusMinus() {
+        assertEquals(6, plusMinus("2 + 31 - 40 + 13"))
         assertEquals(0, plusMinus("0"))
         assertEquals(4, plusMinus("2 + 2"))
-        assertEquals(6, plusMinus("2 + 31 - 40 + 13"))
         assertEquals(-1, plusMinus("0 - 1"))
+        assertEquals(0, plusMinus("0 - 1 + 1 - 0 + 20 - 16 - 4"))
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+2") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("+ 4") }
         assertThrows(IllegalArgumentException::class.java) { plusMinus("4 - -2") }
@@ -103,8 +139,9 @@ class Tests {
     @Test
     @Tag("Hard")
     fun firstDuplicateIndex() {
-        assertEquals(-1, firstDuplicateIndex("Привет"))
         assertEquals(9, firstDuplicateIndex("Он пошёл в в школу"))
+        assertEquals(-1, firstDuplicateIndex("Мы пошли прямо Ррямо располагался магазин"))
+        assertEquals(-1, firstDuplicateIndex("Привет"))
         assertEquals(40, firstDuplicateIndex("Яблоко упало на ветку с ветки оно упало на на землю"))
         assertEquals(9, firstDuplicateIndex("Мы пошли прямо Прямо располагался магазин"))
     }
@@ -112,15 +149,28 @@ class Tests {
     @Test
     @Tag("Hard")
     fun mostExpensive() {
-        assertEquals("", mostExpensive(""))
+        assertEquals("Молоко", mostExpensive("Хлеб 39.9; Молоко 620; Курица 184.0; Конфеты 184.0"))
+        assertEquals(",", mostExpensive(", 0"))
+        assertEquals("а", mostExpensive("а 0"))
+        assertEquals("a", mostExpensive("a 0"))
+        assertEquals("", mostExpensive("a b 0"))
+        assertEquals("Ba", mostExpensive("Ba 0"))
+        assertEquals("Хлеб", mostExpensive("Хлеб 0; Молоко 0; Курица 0; Конфеты 0"))
+        assertEquals("Курица", mostExpensive("Хлеб 39.9; Молоко 62.5; Курица 184.0; Конфеты 184.0"))
         assertEquals("Курица", mostExpensive("Хлеб 39.9; Молоко 62.5; Курица 184.0; Конфеты 89.9"))
+        assertEquals("", mostExpensive(""))
         assertEquals("Вино", mostExpensive("Вино 255.0"))
     }
 
     @Test
     @Tag("Hard")
     fun fromRoman() {
+        assertEquals(1978, fromRoman("MCMLXXVIII"))
         assertEquals(1, fromRoman("I"))
+        assertEquals(-1, fromRoman(""))
+        assertEquals(1978, fromRoman("MCMLXXVIII"))
+        assertEquals(1, fromRoman("I"))
+        assertEquals(-1, fromRoman("IM"))
         assertEquals(3000, fromRoman("MMM"))
         assertEquals(1978, fromRoman("MCMLXXVIII"))
         assertEquals(694, fromRoman("DCXCIV"))
@@ -131,9 +181,10 @@ class Tests {
     @Test
     @Tag("Impossible")
     fun computeDeviceCells() {
+        assertThrows(IllegalStateException::class.java) { computeDeviceCells(1, "<", 500) }
+        assertEquals(listOf(1, 1, 1, 1, 1, 0, 0, 0, 0, 0), computeDeviceCells(10, "- <<<<< +[>+]", 10000))
         assertEquals(listOf(0, 0, 0, 0, 0, 1, 1, 1, 1, 1), computeDeviceCells(10, "+>+>+>+>+", 10000))
         assertEquals(listOf(-1, -1, -1, -1, -1, 0, 0, 0, 0, 0), computeDeviceCells(10, "<-<-<-<-<-", 10000))
-        assertEquals(listOf(1, 1, 1, 1, 1, 0, 0, 0, 0, 0), computeDeviceCells(10, "- <<<<< +[>+]", 10000))
         assertEquals(
             listOf(0, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0),
             computeDeviceCells(11, "<<<<< + >>>>>>>>>> --[<-] >+[>+] >++[--< <[<] >+[>+] >++]", 10000)

@@ -33,6 +33,12 @@ class Tests {
     @Test
     @Tag("Easy")
     fun square() {
+        assertThrows(IllegalArgumentException::class.java) {
+            square("")
+        }
+        assertThrows(IllegalArgumentException::class.java) {
+            square("a4aaa")
+        }
         assertEquals(Square(3, 2), square("c2"))
         assertEquals(Square(5, 5), square("e5"))
         assertEquals(Square(6, 8), square("f8"))
@@ -42,6 +48,9 @@ class Tests {
     @Test
     @Tag("Easy")
     fun rookMoveNumber() {
+        assertThrows(IllegalArgumentException::class.java) {
+            rookMoveNumber(square("00"), square("00"))
+        }
         assertEquals(0, rookMoveNumber(square("e3"), square("e3")))
         assertEquals(2, rookMoveNumber(square("c2"), square("b1")))
         assertEquals(2, rookMoveNumber(square("g8"), square("f6")))
@@ -71,6 +80,9 @@ class Tests {
     @Test
     @Tag("Easy")
     fun bishopMoveNumber() {
+        assertThrows(IllegalArgumentException::class.java) {
+            bishopMoveNumber(square("00"), square("00"))
+        }
         assertEquals(-1, bishopMoveNumber(square("a1"), square("g8")))
         assertEquals(-1, bishopMoveNumber(square("c1"), square("f3")))
         assertEquals(0, bishopMoveNumber(square("d4"), square("d4")))

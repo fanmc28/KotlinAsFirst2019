@@ -65,6 +65,7 @@ class Tests {
     @Test
     @Tag("Easy")
     fun digitNumber() {
+        assertEquals(2, digitNumber(-16))
         assertEquals(1, digitNumber(0))
         assertEquals(1, digitNumber(7))
         assertEquals(2, digitNumber(10))
@@ -91,6 +92,8 @@ class Tests {
     @Test
     @Tag("Easy")
     fun lcm() {
+        assertEquals(181700000, lcm(100000, 45425))
+        assertEquals(1225, lcm(25, 49))
         assertEquals(13, lcm(13, 13))
         assertEquals(8, lcm(2, 8))
         assertEquals(24, lcm(6, 8))
@@ -133,6 +136,9 @@ class Tests {
     @Test
     @Tag("Easy")
     fun isCoPrime() {
+        assertTrue(isCoPrime(82114, 48765))
+        assertTrue(isCoPrime(1, 1))
+        assertFalse(isCoPrime(100000, 45425))
         assertTrue(isCoPrime(25, 49))
         assertFalse(isCoPrime(6, 8))
         assertTrue(isCoPrime(17, 97))
@@ -144,6 +150,7 @@ class Tests {
     @Test
     @Tag("Easy")
     fun squareBetweenExists() {
+        assertFalse(squareBetweenExists(749999, 750000))
         assertTrue(squareBetweenExists(1, 1))
         assertTrue(squareBetweenExists(21, 28))
         assertTrue(squareBetweenExists(36, 48))
@@ -197,7 +204,6 @@ class Tests {
     @Test
     @Tag("Normal")
     fun revert() {
-        assertEquals(6759091911L, revert(1191909576L))
         assertEquals(87431, revert(13478))
         assertEquals(0, revert(0))
         assertEquals(3, revert(3))
@@ -229,24 +235,25 @@ class Tests {
     @Test
     @Tag("Hard")
     fun squareSequenceDigit() {
-        assertEquals(9, squareSequenceDigit(298995))
         assertEquals(1, squareSequenceDigit(1))
         assertEquals(4, squareSequenceDigit(2))
         assertEquals(5, squareSequenceDigit(7))
         assertEquals(6, squareSequenceDigit(12))
         assertEquals(0, squareSequenceDigit(17))
         assertEquals(9, squareSequenceDigit(27))
+        assertEquals(9, squareSequenceDigit(298995))
     }
 
     @Test
     @Tag("Hard")
     fun fibSequenceDigit() {
-        assertEquals(1, fibSequenceDigit(1))
         assertEquals(1, fibSequenceDigit(2))
+        assertEquals(1, fibSequenceDigit(1))
         assertEquals(3, fibSequenceDigit(4))
         assertEquals(2, fibSequenceDigit(9))
         assertEquals(5, fibSequenceDigit(14))
         assertEquals(2, fibSequenceDigit(20))
         assertEquals(5, fibSequenceDigit(33))
+        assertEquals(9, fibSequenceDigit(16))
     }
 }

@@ -2,6 +2,7 @@
 
 package lesson7.task1
 
+import ru.spbstu.wheels.toMap
 import java.io.File
 
 /**
@@ -53,7 +54,28 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+
+    fun countSubstring(s: String, subString: String): Int {
+        return s.windowed(subString.length) {
+            if (it == subString) 1 else 0
+        }.sum()
+    }
+
+    val result = substrings.map { it to 0 }.toMap().toMutableMap()
+    val lowerCase = substrings.map { it to it.toLowerCase() }.toMap()
+
+    val file = File(inputName)
+    for (line in file.readLines().filter { it.isNotEmpty() }) {
+
+        for (word in line.split(" ").filter { it.isNotEmpty() }) lowerCase.forEach {
+            result.computeIfPresent(it.key) { _, v -> v + countSubstring(word.toLowerCase(), it.value) }
+        }
+
+    }
+
+    return result
+}
 
 
 /**
@@ -69,8 +91,26 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  * Исключения (жюри, брошюра, парашют) в рамках данного задания обрабатывать не нужно
  *
  */
+
+val mapReplace = mapOf(
+    "Ы" to "И",
+    "ы" to "и",
+    "Я" to "А",
+    "я" to "а",
+    "Ю" to "У",
+    "ю" to "у"
+)
+
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+
+    val expr = """(?<=[жЖшШчЧщЩ])[ыЫяЯюЮ]""".toRegex()
+    val x = File(inputName)
+    val outputStream = File(outputName).bufferedWriter()
+
+    val s = x.readText().replace(expr) { m -> mapReplace.getValue(m.value) }
+
+    outputStream.write(s)
+    outputStream.close()
 }
 
 /**
@@ -91,7 +131,31 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
+    var length = 0
+    val outputStream = File(outputName).bufferedWriter()
+
+    for (line in File(inputName).readLines()) {
+        val x = line.trim()
+        if (x.length > length)
+            length = x.length
+    }
+    for (line in File(inputName).readLines()) {
+        val y = line.trim()
+        val yModTwo = y.length % 2
+        val lenModTwo = length % 2
+        var size = length / 2 - y.length / 2
+        val result = when {
+            (yModTwo == 0 && lenModTwo == 0 || yModTwo != 0 && lenModTwo != 0) ->
+                " ".repeat(size) + y
+            else -> {
+                size = length / 2 - (y.length + 1) / 2
+                " ".repeat(size) + y
+            }
+        }
+        outputStream.write(result)
+        outputStream.newLine()
+    }
+    outputStream.close()
 }
 
 /**
@@ -122,7 +186,48 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    var maxLength = 0
+    val outputStream = File(outputName).bufferedWriter()
+
+    for (line in File(inputName).readLines()) {
+        val str = line.replace("""\s+""".toRegex(), " ").trim()
+        if (str.length > maxLength)
+            maxLength = str.length
+    }
+
+    for (line in File(inputName).readLines()) {
+        var newLine = line.replace("""\s+""".toRegex(), " ").trim()
+        val currentLength = newLine.length
+        val listOfWords = listOf<String>().toMutableList()
+
+        if (currentLength != maxLength) {
+
+            for (word in newLine.split(" ")) {
+                listOfWords.add(word)
+            }
+            val size = listOfWords.size
+
+            if (size < 2)
+                newLine = listOfWords[0]
+            else {
+                newLine = ""
+                val numberOfSpaces = (maxLength - currentLength) / (size - 1) + 1
+                val exception = (maxLength - currentLength) % (size - 1)
+                newLine += listOfWords[0]
+                for (i in 1 until size) {
+                    newLine += if (i <= exception) {
+                        " ".repeat(numberOfSpaces + 1) + listOfWords[i]
+                    } else " ".repeat(numberOfSpaces) + listOfWords[i]
+                }
+            }
+        }
+
+        with(outputStream) {
+            write(newLine)
+            newLine()
+        }
+    }
+    outputStream.close()
 }
 
 /**
@@ -143,7 +248,23 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val result: MutableMap<String, Int> = mutableMapOf()
+    val reg = """[A-zА-яёЁ]+""".toRegex()
+
+    for (line in File(inputName).readLines()) {
+        reg.findAll(line).forEach {
+            val lc = it.value.toLowerCase()
+            var x = result[lc] ?: 0
+            x += 1
+            result[lc] = x
+        }
+    }
+    val y = result.entries.sortedByDescending { (_, v) -> v }
+    if (result.size < 20)
+        return y.toMap()
+    return y.take(20).toMap()
+}
 
 /**
  * Средняя
@@ -181,7 +302,25 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    val x = dictionary.mapKeys { (k, _) -> k.toLowerCase() }
+    val outputStream = File(outputName).bufferedWriter()
+
+    fun additionalActions(s: Char): String? {
+        val hasUppercase = s.isUpperCase()
+        if (hasUppercase) {
+            val z = x.getValue(s.toLowerCase())
+            if (z.isNotEmpty())
+                return z[0].toUpperCase().toString() + z.removeRange(0, 1).toLowerCase()
+            return z
+        }
+        return x[s]?.toLowerCase()
+    }
+
+    val result = File(inputName).readText().map { if (it.toLowerCase() in x) additionalActions(it) else it }
+        .joinToString(separator = "")
+
+    outputStream.write(result)
+    outputStream.close()
 }
 
 /**
@@ -209,7 +348,24 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    var length = 0
+    var result = ""
+    val outputStream = File(outputName).bufferedWriter()
+
+    for (word in File(inputName).readLines()) {
+        val arrayOfLetters = word.groupBy { it.toLowerCase() }.filter { it.value.size > 1 }
+        if (arrayOfLetters.isEmpty())
+            when {
+                word.length > length -> {
+                    result = word
+                    length = word.length
+                }
+                word.length == length -> result += ", $word"
+
+            }
+    }
+    outputStream.write(result)
+    outputStream.close()
 }
 
 /**
@@ -402,7 +558,45 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    val outputStream = File(outputName).bufferedWriter()
+    val result = (lhv * rhv).toString()
+    val resultLength = result.length
+    val x = lhv.toString()
+    var y = rhv.toString()
+    val rhvLength = y.length
+
+    fun str(x: String, y: String, pos: Int): String {
+        val z = (x.toInt() * y.toInt()).toString()
+        val length = z.length
+
+        return if (pos == 0)
+            " ".repeat(resultLength + 1 - length) + z
+        else "+" + " ".repeat(resultLength - pos - length) + z
+    }
+
+    with(outputStream) {
+        write(" ".repeat(resultLength + 1 - x.length) + x)
+        newLine()
+        write("*" + " ".repeat(resultLength - rhvLength) + y)
+        newLine()
+        write("-".repeat(resultLength + 1))
+        newLine()
+    }
+
+
+    for (i in 0 until rhvLength) {
+        val number = y.toInt() % 10
+        outputStream.write(str(x, number.toString(), i))
+        outputStream.newLine()
+        y = (y.toInt() / 10).toString()
+    }
+
+    with(outputStream) {
+        write("-".repeat(resultLength + 1))
+        newLine()
+        write(" $result")
+        close()
+    }
 }
 
 
@@ -427,6 +621,148 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
-}
+    val outputStream = File(outputName).bufferedWriter()
+    val lhvToString = lhv.toString()
+    val lhvLength = lhvToString.length
+    val answer = lhv / rhv
 
+
+    fun numberInt(lhv: Int, rhv: Int, lhvToString: String): MutableList<Int> {
+        val balance = lhv % rhv
+        val res = listOf<Int>().toMutableList()
+
+        if (answer / 10 == 0) {
+            if (balance == lhv) {
+                res.add(0)
+                res.add(lhv)
+            } else {
+                res.add(answer * rhv)
+                res.add(balance)
+            }
+        } else {
+            var y = 0
+            for (i in 0 until lhvLength) {
+                y = y * 10 + lhvToString[i].toString().toInt()
+                when {
+                    y == 0 -> {
+                        res.add(0)
+                        res.add(0)
+                    }
+                    y / rhv != 0 && y % rhv == 0 -> {
+                        res.add(y)
+                        if (res.size != 1)
+                            res.add(y)
+                        y = 0
+                    }
+                    y / rhv != 0 && y % rhv != 0 -> {
+                        if (res.size != 0)
+                            res.add(y)
+                        res.add(y - (y % rhv))
+                        y %= rhv
+
+                    }
+                    else -> {
+                        if (y / rhv == 0 && res.size != 0) {
+                            res.add(y)
+                            res.add(0)
+                        }
+                    }
+
+                }
+            }
+            res.add(balance)
+        }
+        return res
+    }
+
+    fun numberString(lhv: Int, rhv: Int, lhvToString: String): MutableList<String> {
+
+        val listOfInt = numberInt(lhv, rhv, lhvToString)
+
+        val first = listOfInt[0]
+        val last = lhv % rhv
+        val lengthOfFirs = first.toString().length
+        val firstOfLhv = if (answer == 0) {
+            lhv
+        } else if (lhvToString.take(lengthOfFirs).toInt() - first < 0 || first == 0)
+            lhvToString.take(lengthOfFirs + 1).toInt()
+        else lhvToString.take(lengthOfFirs).toInt()
+
+
+        val res = listOf<String>().toMutableList()
+        res.add("$firstOfLhv")
+        res.add("-$first")
+        res.add("-".repeat(maxOf(res[0].length, res[1].length)))
+
+        var early = if (first == firstOfLhv)
+            1
+        else 0
+
+        var step = 3
+        for (i in 1 until listOfInt.size - 1 step 2) {
+            val now = listOfInt[i]
+            val next = listOfInt[i + 1]
+            early = if (now / 10 == 0 && early == 1)
+                1
+            else 0
+            if (early == 0)
+                res.add("$now")
+            else res.add("0$now")
+            res.add("-$next")
+            early = if (now == next)
+                1
+            else 0
+            res.add("-".repeat(maxOf(res[step].length, res[step + 1].length)))
+            step += 3
+        }
+        res.add("$last")
+
+        return res
+    }
+
+    fun finalLines(): MutableList<String> {
+        val listOfString = numberString(lhv, rhv, lhvToString)
+        var range = if (listOfString[0].length >= listOfString[1].length)
+            0
+        else 1
+        var rangeTwo = 0
+        val resList = mutableListOf<String>()
+
+        resList.add(" ".repeat(range) + lhvToString + " | $rhv")
+        if (answer != 0)
+            resList.add(listOfString[1] + " ".repeat(lhvLength - listOfString[1].length + range + 3) + "$answer")
+        else resList.add(" ".repeat(lhvLength - listOfString[1].length + range) + listOfString[1] + " ".repeat(3) + "$answer")
+        resList.add(listOfString[2])
+
+        for (i in 3 until listOfString.size - 2 step 3) {
+            val now = listOfString[i]
+            val next = listOfString[i + 1]
+            rangeTwo += listOfString[i - 1].length - (now.length - 1)
+            range = rangeTwo + now.length - next.length
+            resList.add(" ".repeat(rangeTwo) + now)
+            resList.add(" ".repeat(range) + next)
+            rangeTwo = minOf(range, rangeTwo)
+            resList.add(" ".repeat(rangeTwo) + listOfString[i + 2])
+        }
+
+        resList.add(
+            " ".repeat(
+                minOf(
+                    range,
+                    rangeTwo
+                ) + listOfString[listOfString.size - 2].length - listOfString[listOfString.size - 1].length
+            ) + listOfString[listOfString.size - 1]
+        )
+        return resList
+    }
+
+    val resList = finalLines()
+    for (i in 0 until resList.size) {
+        with(outputStream) {
+            write(resList[i])
+            newLine()
+        }
+    }
+
+    outputStream.close()
+}
