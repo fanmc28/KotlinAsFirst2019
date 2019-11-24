@@ -25,11 +25,6 @@ interface Matrix<E> {
 
     operator fun get(cell: Cell): E
 
-    fun revertRow(row: Int)
-
-    fun getRow(row: Int): MutableList<E>
-
-    fun getColumn(column: Int): MutableList<E>
     /**
      * Запись в ячейку.
      * Методы могут бросить исключение, если ячейка не существует
@@ -66,14 +61,6 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, value: E)
     }
 
     override fun get(row: Int, column: Int): E = list[row][column]
-
-    override fun revertRow(row: Int) {
-        list[row].reverse()
-    }
-
-    override fun getRow(row: Int): MutableList<E> = list[row]
-
-    override fun getColumn(column: Int): MutableList<E> = list.map { it[column] }.toMutableList()
 
     override fun get(cell: Cell): E = get(cell.row, cell.column)
 

@@ -137,8 +137,33 @@ fun <E> rotate(matrix: Matrix<E>): Matrix<E> {
     val result = transpose(matrix)
 
     for (i in 0 until result.height)
-        result.revertRow(i)
+        revertRow(result, i)
 
+    return result
+}
+
+fun <E> revertRow(matrix: Matrix<E>, row: Int) {
+    for (i in 0 until matrix.width / 2) {
+        val tmp = matrix[row, i]
+        matrix[row, i] = matrix[row, matrix.width - i - 1]
+        matrix[row, matrix.width - i - 1] = tmp
+
+    }
+}
+
+fun <E> getRow(matrix: Matrix<E>, row: Int): MutableList<E> {
+    val result = mutableListOf<E>()
+    for (i in 0 until matrix.width) {
+        result.add(matrix[row, i])
+    }
+    return result
+}
+
+fun <E> getColumn(matrix: Matrix<E>, column: Int): MutableList<E> {
+    val result = mutableListOf<E>()
+    for (i in 0 until matrix.height) {
+        result.add(matrix[i, column])
+    }
     return result
 }
 
@@ -162,7 +187,7 @@ fun isLatinSquare(matrix: Matrix<Int>): Boolean {
     val sum = (1..matrix.height).sum()
 
     for (i in 0 until matrix.height) {
-        if (matrix.getRow(i).sum() != sum || matrix.getColumn(i).sum() != sum)
+        if (getRow(matrix, i).sum() != sum || getColumn(matrix, i).sum() != sum)
             return false
     }
     return true
