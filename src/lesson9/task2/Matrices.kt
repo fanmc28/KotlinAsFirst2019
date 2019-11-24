@@ -84,7 +84,8 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> {
     var element = 1
     var x = 0
     var y = 0
-    val limit = minOf(width, height) - 1
+    val min = minOf(width, height)
+    val limit = min / 2 + min % 2
 
     while (element <= limit) {
 
