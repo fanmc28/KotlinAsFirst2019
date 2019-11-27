@@ -215,8 +215,17 @@ fun isLatinSquare(matrix: Matrix<Int>): Boolean {
 fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> {
     val result = createMatrix(matrix.height, matrix.width, 0)
 
+    if (matrix.height == 1 && matrix.width == 1)
+        return result
+
     fun change(row: Int, column: Int): Int {
         return when {
+            matrix.height == 1 && column != 0 && column != matrix.width - 1 -> matrix[0, column - 1] + matrix[0, column + 1]
+            matrix.height == 1 && column == 0 -> matrix[0, 1]
+            matrix.height == 1 && column == matrix.width - 1 -> matrix[0, column - 1]
+            matrix.width == 1 && row != 0 && row != matrix.height - 1 -> matrix[row - 1, 0] + matrix[row + 1, 0]
+            matrix.width == 1 && row == 0 -> matrix[1, 0]
+            matrix.width == 1 && row == matrix.height - 1 -> matrix[row - 1, 0]
             row == 0 && column == 0 -> matrix[0, 1] + matrix[1, 0] + matrix[1, 1]
             row == 0 && column == matrix.width - 1 -> matrix[0, column - 1] + matrix[1, column - 1] + matrix[1, column]
             row == matrix.height - 1 && column == 0 -> matrix[row - 1, 0] + matrix[row - 1, 1] + matrix[row, 1]
@@ -230,12 +239,11 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> {
         }
     }
 
-    return if (matrix.height != 1 && matrix.width != 1) {
-        for (i in 0 until matrix.height)
-            for (j in 0 until matrix.width)
-                result[i, j] = change(i, j)
-        result
-    } else result
+    for (i in 0 until matrix.height)
+        for (j in 0 until matrix.width)
+            result[i, j] = change(i, j)
+
+    return result
 
 }
 

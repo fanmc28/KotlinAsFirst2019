@@ -203,6 +203,14 @@ class Tests {
     fun sumNeighbours() {
         assertEquals(createMatrix(1, 1, listOf(listOf(0))), sumNeighbours(createMatrix(1, 1, listOf(listOf(42)))))
         assertEquals(
+            createMatrix(3, 1, listOf(listOf(2), listOf(4), listOf(2))),
+            sumNeighbours(createMatrix(3, 1, listOf(listOf(1), listOf(2), listOf(3))))
+        )
+        assertEquals(
+            createMatrix(1, 3, listOf(listOf(2, 4, 2))),
+            sumNeighbours(createMatrix(1, 3, listOf(listOf(1, 2, 3))))
+        )
+        assertEquals(
             createMatrix(2, 2, listOf(listOf(9, 8), listOf(7, 6))),
             sumNeighbours(createMatrix(2, 2, listOf(listOf(1, 2), listOf(3, 4))))
         )
