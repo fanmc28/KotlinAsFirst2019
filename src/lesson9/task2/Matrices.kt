@@ -61,7 +61,29 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  * 10 11 12  5
  *  9  8  7  6
  */
-fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateSpiral(height: Int, width: Int): Matrix<Int> {
+    val result: Matrix<Int> = createMatrix(height, width, 1)
+    var x = 0
+    var y = 0
+    var limit = 0
+
+    for (element in 2..height * width) {
+        when {
+            y < width - 1 - limit && x == limit -> y++
+            y == width - 1 - limit && x < height - 1 - limit -> x++
+            x == height - 1 - limit && y > limit -> y -= 1
+            y == limit && x > limit -> x -= 1
+        }
+
+        if (x == y && x == limit) {
+            limit++
+            x = limit
+            y = limit
+        }
+        result[x, y] = element
+    }
+    return result
+}
 
 /**
  * Сложная
@@ -119,7 +141,30 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> {
  * 10 13 16 18
  * 14 17 19 20
  */
-fun generateSnake(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateSnake(height: Int, width: Int): Matrix<Int> {
+    val result: Matrix<Int> = createMatrix(height, width, 0)
+
+    var list = mutableListOf(1)
+    var k = 1
+    for (i in 1 until width) {
+        list.add(list[i - 1] + k)
+        if (k < height)
+            k += 1
+    }
+
+    changeRow(list, result, 0)
+
+    if (width != 1) {
+        for (i in 1 until height) {
+            val newList = list.drop(1)
+            list = newList.map { it + 1 }.toMutableList()
+            list.add(list[list.size - 1] + minOf(height - i, width - 1))
+            changeRow(list, result, i)
+        }
+    } else changeColumn((1..height).toList(), result, 0)
+
+    return result
+}
 
 /**
  * Средняя

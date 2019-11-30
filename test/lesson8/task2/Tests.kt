@@ -138,6 +138,37 @@ class Tests {
     @Test
     @Tag("Hard")
     fun kingTrajectory() {
+        kingTrajectory(square("e7"), square("g3")).assertKingTrajectory(square("e7"), square("g3"), 4)
+        kingTrajectory(square("a4"), square("e2")).assertKingTrajectory(square("a4"), square("e2"), 4)
+        kingTrajectory(square("f5"), square("d1")).assertKingTrajectory(square("f5"), square("d1"), 4)
+        kingTrajectory(square("f5"), square("a2")).assertKingTrajectory(square("f5"), square("a2"), 5)
+        kingTrajectory(square("c5"), square("c2")).assertKingTrajectory(square("c5"), square("c2"), 3)
+        kingTrajectory(square("c2"), square("c5")).assertKingTrajectory(square("c2"), square("c5"), 3)
+
+        assertEquals(
+            listOf(square("c5"), square("c4"), square("c3"), square("c2")),
+            kingTrajectory(square("c5"), square("c2"))
+        )
+        assertEquals(
+            listOf(square("c2"), square("c3"), square("c4"), square("c5")),
+            kingTrajectory(square("c2"), square("c5"))
+        )
+        assertEquals(
+            listOf(square("f2"), square("e2"), square("d2"), square("c2")),
+            kingTrajectory(square("f2"), square("c2"))
+        )
+        assertEquals(
+            listOf(square("c2"), square("d2"), square("e2"), square("f2")),
+            kingTrajectory(square("c2"), square("f2"))
+        )
+        assertEquals(
+            listOf(square("c2"), square("d3"), square("e4"), square("f5"), square("g5"), square("h5")),
+            kingTrajectory(square("c2"), square("h5"))
+        )
+        assertEquals(
+            listOf(square("c2"), square("d3"), square("e4"), square("f5")),
+            kingTrajectory(square("c2"), square("f5"))
+        )
         assertEquals(listOf(square("f3")), kingTrajectory(square("f3"), square("f3")))
         kingTrajectory(square("c2"), square("a6")).assertKingTrajectory(square("c2"), square("a6"), 4)
         assertEquals(

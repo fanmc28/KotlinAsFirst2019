@@ -122,6 +122,17 @@ class Tests {
     @Test
     @Tag("Hard")
     fun generateSnake() {
+        assertEquals(
+            createMatrix(
+                4, 1,
+                listOf(
+                    listOf(1),
+                    listOf(2),
+                    listOf(3),
+                    listOf(4)
+                )
+            ), generateSnake(4, 1)
+        )
         assertEquals(createMatrix(1, 1, listOf(listOf(1))), generateSnake(1, 1))
         assertEquals(
             createMatrix(
