@@ -174,6 +174,10 @@ class Tests {
     @Tag("Normal")
     fun lineBySegment() {
         assertApproxEquals(
+            Line(Point(0.6005386431586798, -2.220446049250313e-16), 0.0),
+            lineBySegment(Segment(Point(0.6005386431586798, -2.220446049250313e-16), Point(-632.0, -5e-324)))
+        )
+        assertApproxEquals(
             Line(Point(0.0, 0.0), 1.5707963267948966),
             lineBySegment(Segment(Point(0.0, 0.0), Point(0.0, -632.0)))
         )
@@ -200,6 +204,10 @@ class Tests {
     @Test
     @Tag("Hard")
     fun bisectorByPoints() {
+        assertApproxEquals(
+            Line(Point(5e-324 / 2, (-2.220446049250313e-16 + 0.3107749874061584) / 2), 0.0),
+            bisectorByPoints(Point(5e-324, -2.220446049250313e-16), Point(0.0, 0.3107749874061584))
+        )
         assertApproxEquals(
             Line(Point(2.220446049250313e-16 / 2, (0.36019072525983276 - 632.0) / 2), 0.0),
             bisectorByPoints(Point(2.220446049250313e-16, 0.36019072525983276), Point(0.0, -632.0))
