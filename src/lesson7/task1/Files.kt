@@ -105,12 +105,10 @@ fun sibilants(inputName: String, outputName: String) {
 
     val expr = """(?<=[жЖшШчЧщЩ])[ыЫяЯюЮ]""".toRegex()
     val x = File(inputName)
-    val outputStream = File(outputName).bufferedWriter()
 
     val s = x.readText().replace(expr) { m -> mapReplace.getValue(m.value) }
 
-    outputStream.write(s)
-    outputStream.close()
+    File(outputName).writeText(s)
 }
 
 /**
@@ -141,11 +139,9 @@ fun centerFile(inputName: String, outputName: String) {
     }
     for (line in File(inputName).readLines()) {
         val y = line.trim()
-        val yModTwo = y.length % 2
-        val lenModTwo = length % 2
         var size = length / 2 - y.length / 2
         val result = when {
-            (yModTwo == 0 && lenModTwo == 0 || yModTwo != 0 && lenModTwo != 0) ->
+            y.length % 2 == length % 2 ->
                 " ".repeat(size) + y
             else -> {
                 size = length / 2 - (y.length + 1) / 2

@@ -274,34 +274,34 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
             last2.x <= end.x && (segment == Direction.UP_RIGHT || segment == Direction.DOWN_LEFT)
         ) {
             while (x != end.x) {
-                x += 1
-                y -= 1
+                x++
+                y--
                 result.add(HexPoint(x, y))
             }
             while (y != end.y) {
-                y -= 1
+                y--
                 result.add(HexPoint(x, y))
             }
         } else when (segment) {
             Direction.UP_LEFT, Direction.DOWN_RIGHT -> {
                 while (y != end.y) {
-                    y -= 1
-                    x += 1
+                    y--
+                    x++
                     result.add(HexPoint(x, y))
                 }
                 while (x != end.x) {
-                    x += 1
+                    x++
                     result.add(HexPoint(x, y))
                 }
 
             }
             else -> {
                 while (y != last2.y) {
-                    y -= 1
+                    y--
                     result.add(HexPoint(x, y))
                 }
                 while (x != end.x) {
-                    x -= 1
+                    x--
                     result.add(HexPoint(x, y))
                 }
             }

@@ -259,34 +259,21 @@ fun isLatinSquare(matrix: Matrix<Int>): Boolean {
  */
 fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> {
     val result = createMatrix(matrix.height, matrix.width, 0)
+    val newMatrix = createMatrix(matrix.height + 2, matrix.width + 2, 0)
 
     if (matrix.height == 1 && matrix.width == 1)
         return result
 
-    fun change(row: Int, column: Int): Int {
-        return when {
-            matrix.height == 1 && column != 0 && column != matrix.width - 1 -> matrix[0, column - 1] + matrix[0, column + 1]
-            matrix.height == 1 && column == 0 -> matrix[0, 1]
-            matrix.height == 1 && column == matrix.width - 1 -> matrix[0, column - 1]
-            matrix.width == 1 && row != 0 && row != matrix.height - 1 -> matrix[row - 1, 0] + matrix[row + 1, 0]
-            matrix.width == 1 && row == 0 -> matrix[1, 0]
-            matrix.width == 1 && row == matrix.height - 1 -> matrix[row - 1, 0]
-            row == 0 && column == 0 -> matrix[0, 1] + matrix[1, 0] + matrix[1, 1]
-            row == 0 && column == matrix.width - 1 -> matrix[0, column - 1] + matrix[1, column - 1] + matrix[1, column]
-            row == matrix.height - 1 && column == 0 -> matrix[row - 1, 0] + matrix[row - 1, 1] + matrix[row, 1]
-            row == matrix.height - 1 && column == matrix.width - 1 -> matrix[row, column - 1] + matrix[row - 1, column - 1] + matrix[row - 1, column]
-            column == 0 -> matrix[row - 1, column] + matrix[row + 1, column] + matrix[row - 1, column + 1] + matrix[row + 1, column + 1] + matrix[row, column + 1]
-            column == matrix.width - 1 -> matrix[row - 1, column] + matrix[row + 1, column] + matrix[row - 1, column - 1] + matrix[row + 1, column - 1] + matrix[row, column - 1]
-            row == 0 -> matrix[row + 1, column] + matrix[row + 1, column - 1] + matrix[row + 1, column + 1] + matrix[row, column - 1] + matrix[row, column + 1]
-            row == matrix.height - 1 -> matrix[row - 1, column] + matrix[row - 1, column - 1] + matrix[row - 1, column + 1] + matrix[row, column - 1] + matrix[row, column + 1]
-            else -> matrix[row - 1, column - 1] + matrix[row - 1, column] + matrix[row - 1, column + 1] + matrix[row, column + 1] +
-                    matrix[row, column - 1] + matrix[row + 1, column - 1] + matrix[row + 1, column] + matrix[row + 1, column + 1]
-        }
+    for (i in 1 until newMatrix.height - 1) {
+        val row = listOf(0) + getRow(matrix, i - 1) + listOf(0)
+        changeRow(row, newMatrix, i)
     }
 
     for (i in 0 until matrix.height)
         for (j in 0 until matrix.width)
-            result[i, j] = change(i, j)
+            result[i, j] =
+                newMatrix[i, j] + newMatrix[i, j + 1] + newMatrix[i, j + 2] + newMatrix[i + 1, j] +
+                        newMatrix[i + 1, j + 2] + newMatrix[i + 2, j] + newMatrix[i + 2, j + 1] + newMatrix[i + 2, j + 2]
 
     return result
 
