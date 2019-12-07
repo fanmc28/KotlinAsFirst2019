@@ -237,56 +237,53 @@ fun kingMoveNumber(start: Square, end: Square): Int {
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
 fun kingTrajectory(start: Square, end: Square): List<Square> {
+    if (start == end)
+        return listOf(start)
 
-    fun diagonal(start: Square, end: Square): List<Square> {
+    fun move(k: Int, x: Int, y: Int, point: Square): List<Square> {
         val result = mutableListOf<Square>()
-        val begin = when {
-            start.row <= end.row -> start
-            else -> end
-        }
+        var pt = point
 
-        val finish = if (begin == start)
-            end
-        else start
-        result.add(begin)
-
-        var pt = begin
-        while (pt.row != finish.row && pt.column != finish.column) {
-            pt = if (pt.column > finish.column)
-                Square(pt.column - 1, pt.row + 1)
-            else Square(pt.column + 1, pt.row + 1)
+        for (i in 1..k) {
+            pt = Square(pt.column + x, pt.row + y)
             result.add(pt)
         }
         return result
     }
 
-    fun lineTravel(start: Square, end: Square): List<Square> {
-        val list = mutableListOf<Square>()
-        var point = start
-
-        while (point != end) {
-            point = when {
-                point.column == end.column && point.row < end.row -> Square(point.column, point.row + 1)
-                point.column == end.column && point.row > end.row -> Square(point.column, point.row - 1)
-                point.row == end.row && point.column < end.column -> Square(point.column + 1, point.row)
-                else -> Square(point.column - 1, point.row)
+    fun diagonal(start: Square, end: Square): List<Square> {
+        var x = 1
+        var y = 1
+        when {
+            start.row > end.row && start.column < end.column -> y = -1
+            start.row < end.row && start.column > end.column -> x = -1
+            start.row > end.row && start.column > end.column -> {
+                x = -1
+                y = -1
             }
-            list.add(point)
         }
-        return list
+        val k = minOf(abs(start.row - end.row), abs(start.column - end.column))
+        return listOf(start) + move(k, x, y, start)
+    }
+
+    fun lineTravel(start: Square, end: Square): List<Square> {
+        var x = 0
+        var y = 0
+
+        when {
+            start.column == end.column && start.row < end.row -> y = 1
+            start.column == end.column && start.row > end.row -> y = -1
+            start.row == end.row && start.column < end.column -> x = 1
+            else -> x = -1
+        }
+        val k = maxOf(abs(start.row - end.row), abs(start.column - end.column))
+        return move(k, x, y, start)
     }
 
     val list = diagonal(start, end)
     val pointFirst = list[list.size - 1]
-    val pointLast = if (start in list)
-        end
-    else start
 
-    val result = list + lineTravel(pointFirst, pointLast)
-
-    return if (result[0] == start)
-        result
-    else result.reversed()
+    return list + lineTravel(pointFirst, end)
 }
 
 /**

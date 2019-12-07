@@ -138,6 +138,54 @@ class Tests {
     @Test
     @Tag("Hard")
     fun kingTrajectory() {
+        assertEquals(
+            listOf(square("e2"), square("d3")),
+            kingTrajectory(square("e2"), square("d3"))
+        )
+        assertEquals(
+            listOf(square("f1"), square("e2"), square("d3")),
+            kingTrajectory(square("f1"), square("d3"))
+        )
+        assertEquals(
+            listOf(square("d3"), square("e2")),
+            kingTrajectory(square("d3"), square("e2"))
+        )
+        assertEquals(
+            listOf(square("d3"), square("e2"), square("f1")),
+            kingTrajectory(square("d3"), square("f1"))
+        )
+        assertEquals(
+            listOf(square("c2"), square("b3")),
+            kingTrajectory(square("c2"), square("b3"))
+        )
+        assertEquals(
+            listOf(square("c2"), square("b3"), square("a4")),
+            kingTrajectory(square("c2"), square("a4"))
+        )
+        assertEquals(
+            listOf(square("b3"), square("c2")),
+            kingTrajectory(square("b3"), square("c2"))
+        )
+        assertEquals(
+            listOf(square("a4"), square("b3"), square("c2")),
+            kingTrajectory(square("a4"), square("c2"))
+        )
+        assertEquals(
+            listOf(square("c2"), square("d3")),
+            kingTrajectory(square("c2"), square("d3"))
+        )
+        assertEquals(
+            listOf(square("c2"), square("d3"), square("e4")),
+            kingTrajectory(square("c2"), square("e4"))
+        )
+        assertEquals(
+            listOf(square("d3"), square("c2")),
+            kingTrajectory(square("d3"), square("c2"))
+        )
+        assertEquals(
+            listOf(square("e4"), square("d3"), square("c2")),
+            kingTrajectory(square("e4"), square("c2"))
+        )
         kingTrajectory(square("e7"), square("g3")).assertKingTrajectory(square("e7"), square("g3"), 4)
         kingTrajectory(square("a4"), square("e2")).assertKingTrajectory(square("a4"), square("e2"), 4)
         kingTrajectory(square("f5"), square("d1")).assertKingTrajectory(square("f5"), square("d1"), 4)
