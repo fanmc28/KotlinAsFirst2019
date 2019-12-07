@@ -115,6 +115,24 @@ class HexTests {
     fun pathBetweenHexes() {
         assertEquals(
             listOf(
+                HexPoint(y = 0, x = 3),
+                HexPoint(y = 1, x = 3),
+                HexPoint(y = 2, x = 3),
+                HexPoint(y = 3, x = 2),
+                HexPoint(y = 4, x = 1)
+            ), pathBetweenHexes(HexPoint(y = 0, x = 3), HexPoint(y = 4, x = 1))
+        )
+        assertEquals(
+            listOf(
+                HexPoint(y = 4, x = 4),
+                HexPoint(y = 4, x = 3),
+                HexPoint(y = 4, x = 2),
+                HexPoint(y = 3, x = 2),
+                HexPoint(y = 2, x = 2)
+            ), pathBetweenHexes(HexPoint(y = 4, x = 4), HexPoint(y = 2, x = 2))
+        )
+        assertEquals(
+            listOf(
                 HexPoint(y = 4, x = 1),
                 HexPoint(y = 4, x = 2),
                 HexPoint(y = 5, x = 2)
@@ -141,9 +159,9 @@ class HexTests {
         assertEquals(
             listOf(
                 HexPoint(y = 4, x = 1),
-                HexPoint(y = 3, x = 2),
-                HexPoint(y = 2, x = 3),
-                HexPoint(y = 2, x = 4),
+                HexPoint(y = 4, x = 2),
+                HexPoint(y = 4, x = 3),
+                HexPoint(y = 3, x = 4),
                 HexPoint(y = 2, x = 5)
             ), pathBetweenHexes(HexPoint(y = 4, x = 1), HexPoint(y = 2, x = 5))
         )

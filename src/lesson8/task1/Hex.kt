@@ -237,80 +237,72 @@ fun pathBetweenHexes(from: HexPoint, to: HexPoint): List<HexPoint> {
     if (from.distance(to) < 2)
         return listOf(from, to)
 
-    val result = mutableListOf<HexPoint>()
+    var result = listOf(from)
     val length = from.distance(to)
 
-    if (HexSegment(from, to).direction() == Direction.LEFT || HexSegment(from, to).direction() == Direction.RIGHT) {
-        result.add(from)
-        for (i in 1 until length) {
-            if (from.x < to.x)
-                result.add(HexPoint(from.x + i, from.y))
-            else result.add(HexPoint(from.x - i, from.y))
+    fun firstMove(from: HexPoint, x: Int, y: Int): List<HexPoint> {
+        var point = from
+        val res = mutableListOf<HexPoint>()
+        while (point.x != to.x && point.x + point.y != to.y + to.x) {
+            point = HexPoint(point.x + x, point.y + y)
+            res.add(point)
         }
-        result.add(to)
-
-    } else {
-        var last1 = HexPoint(from.x + from.y - to.y, to.y)
-        var last2 = HexPoint(from.x, to.y)
-        var begin = from
-        var end = to
-
-        val segment = if (last1.distance(begin) + last1.distance(end) < last2.distance(begin) + last2.distance(end))
-            HexSegment(from, last1).direction()
-        else HexSegment(from, last2).direction()
-
-        if (segment == Direction.UP_LEFT || segment == Direction.UP_RIGHT) {
-            result.add(to)
-            begin = to
-            end = from
-            last1 = HexPoint(begin.x + begin.y - end.y, end.y)
-            last2 = HexPoint(begin.x, end.y)
-        } else result.add(from)
-
-        var x = begin.x
-        var y = begin.y
-
-        if (last1.x >= end.x && (segment == Direction.UP_LEFT || segment == Direction.DOWN_RIGHT) ||
-            last2.x <= end.x && (segment == Direction.UP_RIGHT || segment == Direction.DOWN_LEFT)
-        ) {
-            while (x != end.x) {
-                x++
-                y--
-                result.add(HexPoint(x, y))
-            }
-            while (y != end.y) {
-                y--
-                result.add(HexPoint(x, y))
-            }
-        } else when (segment) {
-            Direction.UP_LEFT, Direction.DOWN_RIGHT -> {
-                while (y != end.y) {
-                    y--
-                    x++
-                    result.add(HexPoint(x, y))
-                }
-                while (x != end.x) {
-                    x++
-                    result.add(HexPoint(x, y))
-                }
-
-            }
-            else -> {
-                while (y != last2.y) {
-                    y--
-                    result.add(HexPoint(x, y))
-                }
-                while (x != end.x) {
-                    x--
-                    result.add(HexPoint(x, y))
-                }
-            }
-        }
-
-        if (segment == Direction.UP_LEFT || segment == Direction.UP_RIGHT)
-            result.reverse()
+        return res
     }
 
+    fun secondMove(point: HexPoint, x: Int, y: Int): List<HexPoint> {
+        val res = mutableListOf<HexPoint>()
+        var pt = point
+        while (pt != to) {
+            pt = HexPoint(pt.x + x, pt.y + y)
+            res.add(pt)
+        }
+        return res
+    }
+
+    fun whereToGo(direction: Direction): Pair<Int, Int> {
+        var x = 0
+        val y: Int
+        when (direction) {
+            Direction.UP_RIGHT -> y = 1
+            Direction.DOWN_LEFT -> y = -1
+            Direction.UP_LEFT -> {
+                y = 1
+                x = -1
+            }
+            else -> {
+                x = 1
+                y = -1
+            }
+        }
+        return Pair(x, y)
+    }
+
+    if (from.y == to.y || length == abs(from.x - to.x) + abs(from.y - to.y) || length == abs(from.x - to.x)) {
+
+        val x = when {
+            to.y > from.y && to.x > from.x || to.y < from.y && to.x > from.x || from.x < to.x -> 1
+            else -> -1
+        }
+
+        result = result + firstMove(from, x, 0)
+    } else {
+        var x = 0
+        val y: Int
+        if (from.y < to.y)
+            y = 1
+        else {
+            y = -1
+            x = 1
+        }
+
+        result = result + firstMove(from, x, y)
+    }
+    val point = result[result.size - 1]
+    val direction = HexSegment(point, to).direction()
+    val pair = whereToGo(direction)
+
+    result = result + secondMove(point, pair.first, pair.second)
     return result
 }
 
