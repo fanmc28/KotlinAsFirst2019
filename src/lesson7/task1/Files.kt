@@ -130,28 +130,28 @@ fun sibilants(inputName: String, outputName: String) {
  */
 fun centerFile(inputName: String, outputName: String) {
     var length = 0
-    val outputStream = File(outputName).bufferedWriter()
 
     for (line in File(inputName).readLines()) {
         val x = line.trim()
         if (x.length > length)
             length = x.length
     }
-    for (line in File(inputName).readLines()) {
-        val y = line.trim()
-        var size = length / 2 - y.length / 2
-        val result = when {
-            y.length % 2 == length % 2 ->
-                " ".repeat(size) + y
-            else -> {
-                size = length / 2 - (y.length + 1) / 2
-                " ".repeat(size) + y
+    File(outputName).bufferedWriter().use {
+        for (line in File(inputName).readLines()) {
+            val y = line.trim()
+            var size = length / 2 - y.length / 2
+            val result = when {
+                y.length % 2 == length % 2 ->
+                    " ".repeat(size) + y
+                else -> {
+                    size = length / 2 - (y.length + 1) / 2
+                    " ".repeat(size) + y
+                }
             }
+            it.write(result)
+            it.newLine()
         }
-        outputStream.write(result)
-        outputStream.newLine()
     }
-    outputStream.close()
 }
 
 /**
@@ -183,7 +183,6 @@ fun centerFile(inputName: String, outputName: String) {
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
     var maxLength = 0
-    val outputStream = File(outputName).bufferedWriter()
 
     for (line in File(inputName).readLines()) {
         val str = line.replace("""\s+""".toRegex(), " ").trim()
@@ -191,39 +190,37 @@ fun alignFileByWidth(inputName: String, outputName: String) {
             maxLength = str.length
     }
 
-    for (line in File(inputName).readLines()) {
-        var newLine = line.replace("""\s+""".toRegex(), " ").trim()
-        val currentLength = newLine.length
-        val listOfWords = listOf<String>().toMutableList()
+    File(outputName).bufferedWriter().use {
+        for (line in File(inputName).readLines()) {
+            var newLine = line.replace("""\s+""".toRegex(), " ").trim()
+            val currentLength = newLine.length
+            val listOfWords = listOf<String>().toMutableList()
 
-        if (currentLength != maxLength) {
+            if (currentLength != maxLength) {
 
-            for (word in newLine.split(" ")) {
-                listOfWords.add(word)
-            }
-            val size = listOfWords.size
+                for (word in newLine.split(" ")) {
+                    listOfWords.add(word)
+                }
+                val size = listOfWords.size
 
-            if (size < 2)
-                newLine = listOfWords[0]
-            else {
-                newLine = ""
-                val numberOfSpaces = (maxLength - currentLength) / (size - 1) + 1
-                val exception = (maxLength - currentLength) % (size - 1)
-                newLine += listOfWords[0]
-                for (i in 1 until size) {
-                    newLine += if (i <= exception) {
-                        " ".repeat(numberOfSpaces + 1) + listOfWords[i]
-                    } else " ".repeat(numberOfSpaces) + listOfWords[i]
+                if (size < 2)
+                    newLine = listOfWords[0]
+                else {
+                    newLine = ""
+                    val numberOfSpaces = (maxLength - currentLength) / (size - 1) + 1
+                    val exception = (maxLength - currentLength) % (size - 1)
+                    newLine += listOfWords[0]
+                    for (i in 1 until size) {
+                        newLine += if (i <= exception) {
+                            " ".repeat(numberOfSpaces + 1) + listOfWords[i]
+                        } else " ".repeat(numberOfSpaces) + listOfWords[i]
+                    }
                 }
             }
-        }
-
-        with(outputStream) {
-            write(newLine)
-            newLine()
+            it.write(newLine)
+            it.newLine()
         }
     }
-    outputStream.close()
 }
 
 /**
@@ -299,7 +296,6 @@ fun top20Words(inputName: String): Map<String, Int> {
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
     val x = dictionary.mapKeys { (k, _) -> k.toLowerCase() }
-    val outputStream = File(outputName).bufferedWriter()
 
     fun additionalActions(s: Char): String? {
         val hasUppercase = s.isUpperCase()
@@ -315,8 +311,7 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
     val result = File(inputName).readText().map { if (it.toLowerCase() in x) additionalActions(it) else it }
         .joinToString(separator = "")
 
-    outputStream.write(result)
-    outputStream.close()
+    File(outputName).writeText(result)
 }
 
 /**
@@ -346,7 +341,6 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     var length = 0
     var result = ""
-    val outputStream = File(outputName).bufferedWriter()
 
     for (word in File(inputName).readLines()) {
         val arrayOfLetters = word.groupBy { it.toLowerCase() }.filter { it.value.size > 1 }
@@ -360,8 +354,7 @@ fun chooseLongestChaoticWord(inputName: String, outputName: String) {
 
             }
     }
-    outputStream.write(result)
-    outputStream.close()
+    File(outputName).writeText(result)
 }
 
 /**
@@ -554,7 +547,6 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    val outputStream = File(outputName).bufferedWriter()
     val result = (lhv * rhv).toString()
     val resultLength = result.length
     val x = lhv.toString()
@@ -570,28 +562,24 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
         else "+" + " ".repeat(resultLength - pos - length) + z
     }
 
-    with(outputStream) {
-        write(" ".repeat(resultLength + 1 - x.length) + x)
-        newLine()
-        write("*" + " ".repeat(resultLength - rhvLength) + y)
-        newLine()
-        write("-".repeat(resultLength + 1))
-        newLine()
-    }
+    File(outputName).bufferedWriter().use {
+        it.write(" ".repeat(resultLength + 1 - x.length) + x)
+        it.newLine()
+        it.write("*" + " ".repeat(resultLength - rhvLength) + y)
+        it.newLine()
+        it.write("-".repeat(resultLength + 1))
+        it.newLine()
 
+        for (i in 0 until rhvLength) {
+            val number = y.toInt() % 10
+            it.write(str(x, number.toString(), i))
+            it.newLine()
+            y = (y.toInt() / 10).toString()
+        }
 
-    for (i in 0 until rhvLength) {
-        val number = y.toInt() % 10
-        outputStream.write(str(x, number.toString(), i))
-        outputStream.newLine()
-        y = (y.toInt() / 10).toString()
-    }
-
-    with(outputStream) {
-        write("-".repeat(resultLength + 1))
-        newLine()
-        write(" $result")
-        close()
+        it.write("-".repeat(resultLength + 1))
+        it.newLine()
+        it.write(" $result")
     }
 }
 
@@ -617,7 +605,6 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    val outputStream = File(outputName).bufferedWriter()
     val lhvToString = lhv.toString()
     val lhvLength = lhvToString.length
     val answer = lhv / rhv
@@ -753,12 +740,10 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
     }
 
     val resList = finalLines()
-    for (i in 0 until resList.size) {
-        with(outputStream) {
-            write(resList[i])
-            newLine()
+    File(outputName).bufferedWriter().use {
+        for (i in 0 until resList.size) {
+            it.write(resList[i])
+            it.newLine()
         }
     }
-
-    outputStream.close()
 }
